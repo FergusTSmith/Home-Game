@@ -8,16 +8,17 @@ const suiteSymbols = {
   d: "♦",
 };
 
-function MenuIcon({symbol, iconColour}) {
-    const colour = iconColour
+function MenuIcon({ symbol, iconColour }) {
+  const colour = iconColour;
   return (
     <Box
       sx={{
         color: iconColour,
-        width: "20vw",
-        height: "20vw",
-        fontSize: "17vw",
-        transition: "color 0.5s ease"
+
+        fontSize: "8vw",
+        transition: "color 0.5s ease",
+        // display: 'flex',
+        // textAlign: 'center'
       }}
     >
       {symbol}

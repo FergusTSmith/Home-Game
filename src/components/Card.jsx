@@ -17,25 +17,40 @@ const suiteSymbols = {
   d: "♦",
 };
 
-function Card({ visible, value }) {
+function Card({ visible, value, community =true }) {
   const numeric = value.slice(0, value.length - 1);
   const suite = value.slice(-1);
 
   return (
     <Box>
-      <Box sx={{ position: "absolute" }}>
+      <Box sx={{ position: "absolute", }}>
         {visible && (
-          <Typography
-            sx={{
-              color: "white",
-              ml: numeric === "10" ? 0.8 : 0.8,
-              opacity: 1,
-              fontSize: 27,
-              fontFamily: 'Josefin-Sans'
-            }}
-          >
-            {numeric}
-          </Typography>
+          <Box sx={{ width: "100%", display: "flex" }}>
+            <Typography
+              sx={{
+                color: "white",
+                ml: numeric === "10" ? 0.8 : 0.8,
+                opacity: 1,
+                fontSize: numeric === "10" ? 23 : 23,
+                fontFamily: "Josefin-Sans",
+              }}
+            >
+              {numeric}
+            </Typography>
+            {!community && <Typography
+              sx={{
+                color: "white",
+                ml: numeric === "10" ? 0.8 : 0.8,
+                opacity: 0.5,
+                fontFamily: "Josefin-Sans",
+                // position: "absolute",
+                mt: '0.75vh',
+                // mr: '2vw'                
+              }}
+            >
+              {suiteSymbols[suite]}
+            </Typography>}
+          </Box>
         )}
       </Box>
       <Box
@@ -43,9 +58,10 @@ function Card({ visible, value }) {
           minWidth: "50px",
           width: "95%",
           height: "90%",
+          minHeight: '70px',
           flex: "1",
           background: visible ? suiteColours[suite] : "gray",
-          borderRadius: "0.8vw",
+          borderRadius: 2,
           mr: "0.1vw",
           ml: "0.1vw",
           boxShadow:
@@ -64,7 +80,7 @@ function Card({ visible, value }) {
             sx={{ fontSize: "50px", position: "absolute", color: "darkgray" }}
           ></Typography>
         )}
-        {visible && (
+        {visible && community && (
           <Typography
             sx={{
               fontSize: "50px",

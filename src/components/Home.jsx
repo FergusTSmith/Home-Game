@@ -1,113 +1,37 @@
 import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
-import Table from "./Table";
+import Table from "./Table/Table";
 import HomeScreen from "./HomeScreen/HomeScreen";
 import { io } from "socket.io-client";
+import Background from "./Background/Background";
 
 const socket = io("http://127.0.0.1:5000", { transports: ["websocket"] });
- // Adjust URL to match Flask server
+// Adjust URL to match Flask server
 
 function Home() {
-  const players = [
-    {
-      name: "Goose",
-      chips: 10000,
-      playerId: "43r5uf",
-    },
-    {
-      name: "Goose1",
-      chips: 10000,
-      playerId: "gwrtgq",
-    },
-    {
-      name: "Goose2",
-      chips: 10000,
-      playerId: "34t1gw",
-    },
-    {
-      name: "Goose3",
-      chips: 10000,
-      playerId: "vpekvt",
-    },
-  ];
   const [message, setMessage] = useState("");
   const [messageSubject, setMessageSubject] = useState("message");
   const [messages, setMessages] = useState([]);
+  const [inGame, setInGame] = useState(false);
+  const [gameDetails, setGameDetails] = useState({});
+  const [storedGameDetails, setStoredGameDetails] = useState();
+  const [playerDetails, setPlayerDetails] = useState();
+  const [tableDetails, setTableDetails] = useState();
 
-  const testPlayers = [
-    {
-      playerId: "test",
-      chips: 1234,
-    },
-    {
-      playerId: "test2",
-      chips: 1234,
-    },
-    {
-      playerId: "test3",
-      chips: 1234,
-    },
-    {
-      playerId: "test4",
-      chips: 1234,
-    },
-    {
-      playerId: "test5",
-      chips: 1234,
-    },
-  ];
+  console.log("STORED GAME DETIALS", storedGameDetails);
 
-  const gameStartParams = {
-    hostPlayer: "HOST_ID_TEST",
-    maxPlayers: 18,
-    type: "CASH",
-    startingChips: 20000,
-    smallBlind: 100,
-    bigBlind: 200,
-    allowRebuys: true,
-    showHands: true,
-    showWinningHand: true,
-    gameSpeed: "SLOW",
-    pauseToShowWinningHand: 4,
-    blindIncreaseInterval: null,
-    hourlyBreaks: false,
-    breakInterval: 300,
+  const handleHomeButton = () => {
+    setStoredGameDetails(gameDetails);
+    setGameDetails({});
   };
 
-  const gameStartParamsTourny = {
-    hostPlayer: "HOST_ID_TEST",
-    maxPlayers: 18,
-    type: "CASH",
-    startingChips: 20000,
-    smallBlind: 100,
-    bigBlind: 200,
-    allowRebuys: true,
-    showHands: true,
-    showWinningHand: true,
-    gameSpeed: "FAST",
-    pauseToShowWinningHand: 5,
-    blindIncreaseInterval: "FAST",
-    hourlyBreaks: false,
-    breakInterval: 300,
+  const rejoinGame = () => {
+    setGameDetails(storedGameDetails);
+    setStoredGameDetails({});
   };
 
-  const gameJoinParams = {
-    playerId: "JOINING_PLAYER",
-    gameId: "testId",
-  };
-
-  const sendTestMessage = () => {
-    socket.emit("create_game", gameStartParams);
-  };
-
-  const sendJoinMessage = () => {
-    socket.emit("join_game", gameJoinParams);
-  };
-
-  const sendMessage = () => {
-    socket.emit(messageSubject, message);
-    setMessage("");
-    setMessageSubject("");
+  const isInGame = () => {
+    return Object.keys(gameDetails).length > 0;
   };
 
   useEffect(() => {
@@ -115,19 +39,37 @@ function Home() {
       console.log("Connected to server");
     });
 
-    // socket.on("message", (data) => {
-    //   setMessages((prevMessages) => [...prevMessages, data]);
-    // });
+    socket.on("message", (data) => {
+      console.log("data", data);
+      setMessages((prevMessages) => [...prevMessages, data]);
+    });
 
-    socket.on('disconnect', () => {
-      console.log("client disconnected")
-    })
+    socket.on("disconnect", () => {
+      console.log("client disconnected");
+    });
+
+    socket.on("gameStartSuccess", (data) => {
+      console.log("WHAT THE FUCK");
+      console.log("fergus game created success", data);
+      setGameDetails(data.game);
+      setTableDetails(data.table);
+      console.log("FERGUS TABLES", data.table);
+      // setPlayerDetails(data.hostPlayer);
+    });
+
+    socket.on("gameJoinSuccess", (data) => {
+      console.log("BOMBACLAAT");
+      console.log("fergus join  success", data);
+      setGameDetails(data.game);
+      setTableDetails(data.table);
+      // setPlayerDetails(data.hostPlayer);
+    });
     return () => {
       socket.off("message");
     };
   }, []);
 
-  const [inGame, setInGame] = useState(false);
+  console.log("playerDetails", playerDetails);
 
   return (
     <Box
@@ -141,47 +83,96 @@ function Home() {
         alignItems: "centre",
         overflow: "hidden",
         textAlign: "center",
-        position: 'fixed'
+        position: "fixed",
       }}
     >
-      {!inGame &&<Box
-        sx={{
-          fontFamily: "Orbiton",
-          position: "absolute",
-          width: "100%",
-          top: 40,
-          fontSize: 70,
-          color: "rgb(205, 205, 205)",
-        }}
-      >
-        HomeGame
-      </Box>}
+      <Background />
+      {!isInGame() && (
+        <Box
+          sx={{
+            fontFamily: "Orbiton",
+            position: "absolute",
+            width: "100%",
+            top: 40,
+            fontSize: "6.5vw",
+            color: "rgb(205, 205, 205)",
+          }}
+        >
+          HomeGame
+        </Box>
+      )}
+      {isInGame() && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 10,
+            left: 20,
+            fontSize: 50,
+            color: "gray",
+            ":hover": {
+              color: "white",
+            },
+            transition: "color ease 0.5s",
+          }}
+          onClick={() => handleHomeButton()}
+        >
+          ⌂
+        </Box>
+      )}
+      {storedGameDetails && !isInGame() && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: "30%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            fontFamily: "Orbiton",
+            color: "white",
+            opacity: 0.2,
+            zIndex: 100,
+            ":hover": {
+              opacity: 0.6,
+            },
+            transition: "opacity ease 1s",
+          }}
+          onClick={() => rejoinGame()}
+        >
+          Rejoin Game? {storedGameDetails.gameId}
+        </Box>
+      )}
 
-      {!inGame && <HomeScreen setInGame={setInGame}></HomeScreen>}
-      {inGame && <Table players={players}></Table>}
-      <div>
-      <h2>Flask-SocketIO Test</h2>
-      <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        placeholder="Type a message"
-      />{" "}
-      <input
-        type="text"
-        value={messageSubject}
-        onChange={(e) => setMessageSubject(e.target.value)}
-        placeholder="Type a header"
-      />
-      <button onClick={sendMessage}>Send</button>
-      <button onClick={sendTestMessage}>Send Test</button>
-      <button onClick={sendJoinMessage}>Join Test</button>
-      <ul>
-        {messages.map((msg, index) => (
-          <li key={index}>{msg}</li>
-        ))}
-      </ul>
-    </div>
+      {!isInGame() && (
+        <HomeScreen
+          setInGame={setInGame}
+          socket={socket}
+          setPlayerDetails={setPlayerDetails}
+          playerDetails={playerDetails}
+        ></HomeScreen>
+      )}
+      {isInGame() && (
+        <Table
+          gameDetails={gameDetails}
+          tableDetails={tableDetails}
+          playerDetails={playerDetails}
+        ></Table>
+      )}
+      {playerDetails && (
+        <Box
+          sx={{
+            position: "fixed",
+            bottom: 2,
+            left: 5,
+            fontFamily: "Orbiton",
+            color: "white",
+            fontSize: 10,
+            opacity: 0.2,
+            zIndex: 100,
+            transition: "opacity ease 1s",
+          }}
+        >
+          Current Username: {playerDetails}
+        </Box>
+      )}
     </Box>
   );
 }
