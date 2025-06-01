@@ -12,13 +12,19 @@ function EmptyPlayer({ position }) {
         flexDirection: "column",
         alignItems: "center",
         position: "fixed",
-        bottom: position.bottom,
-        left: position.left,
-        right: position.right,
+        bottom: position?.bottom,
+        left: position?.left,
+        right: position?.right,
         // background: "gray",
         minWidth: "100px",
         width: "10vw",
         // background: 'pink'
+        opacity: 0.7,
+        ":hover": {
+          opacity: 1,
+        },
+        transition: "opacity ease 0.5s",
+        cursor: "pointer",
       }}
     >
       <Box
@@ -33,6 +39,7 @@ function EmptyPlayer({ position }) {
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "column",
+          minHeight: "40px",
           pt: "0.5vw",
           pb: "0.5vw",
           borderRadius: "2vw",
@@ -45,8 +52,8 @@ function EmptyPlayer({ position }) {
       <Box
         sx={{
           position: "absolute",
-          top: position.chipPosition === "top" ? 80 : -50,
-          bottom: position.chipPosition === "bottom" ? 100 : 0,
+          top: position?.chipPosition === "top" ? 80 : -50,
+          bottom: position?.chipPosition === "bottom" ? 100 : 0,
         }}
       >
         <PokerChips amount={13145} />

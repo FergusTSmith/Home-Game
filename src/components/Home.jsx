@@ -13,6 +13,8 @@ function Home() {
   const [messageSubject, setMessageSubject] = useState("message");
   const [messages, setMessages] = useState([]);
   const [inGame, setInGame] = useState(false);
+  const [gameLobbyOpen, setGameLobbyOpen] = useState(true);
+
   const [gameDetails, setGameDetails] = useState({});
   const [storedGameDetails, setStoredGameDetails] = useState();
   const [playerDetails, setPlayerDetails] = useState();
@@ -49,11 +51,8 @@ function Home() {
     });
 
     socket.on("gameStartSuccess", (data) => {
-      console.log("WHAT THE FUCK");
-      console.log("fergus game created success", data);
       setGameDetails(data.game);
       setTableDetails(data.table);
-      console.log("FERGUS TABLES", data.table);
       // setPlayerDetails(data.hostPlayer);
     });
 
@@ -113,10 +112,56 @@ function Home() {
               color: "white",
             },
             transition: "color ease 0.5s",
+            cursor: "pointer",
           }}
           onClick={() => handleHomeButton()}
         >
           ⌂
+        </Box>
+      )}
+
+      {isInGame() && (
+        <Box
+          sx={{
+            position: "fixed",
+            display: "flex",
+            top: 0,
+            right: 0,
+            fontSize: 15,
+            color: "gray",
+
+            cursor: "pointer",
+            pt: 1.5,
+            pb: 1.5,
+            pl: 2,
+            pr: 2,
+            gap: 1,
+            background:
+              "radial-gradient(circle at top, #3a4753 0%, #181b1f 60%)",
+          }}
+        >
+          <Box
+            onClick={(e) => setGameLobbyOpen(true)}
+            sx={{
+              ":hover": {
+                color: "white",
+              },
+              transition: "color ease 0.5s",
+            }}
+          >
+            Lobby
+          </Box>
+          <Box>|</Box>
+          <Box
+            sx={{
+              ":hover": {
+                color: "white",
+              },
+              transition: "color ease 0.5s",
+            }}
+          >
+            Settings
+          </Box>
         </Box>
       )}
       {storedGameDetails && !isInGame() && (
@@ -134,6 +179,7 @@ function Home() {
               opacity: 0.6,
             },
             transition: "opacity ease 1s",
+            cursor: "pointer",
           }}
           onClick={() => rejoinGame()}
         >
@@ -154,6 +200,8 @@ function Home() {
           gameDetails={gameDetails}
           tableDetails={tableDetails}
           playerDetails={playerDetails}
+          setGameLobbyOpen={setGameLobbyOpen}
+          gameLobbyOpen={gameLobbyOpen}
         ></Table>
       )}
       {playerDetails && (

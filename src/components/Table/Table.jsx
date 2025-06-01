@@ -9,8 +9,7 @@ import PokerChips from "./Chips";
 import LobbyModal from "./Lobby/LobbyModal";
 import EmptyPlayer from "./EmptyPlayer";
 
-function Table({ gameDetails, tableDetails, playerDetails }) {
-  const [gameLobbyOpen, setGameLobbyOpen] = useState(true);
+function Table({ gameDetails, tableDetails, playerDetails, gameLobbyOpen, setGameLobbyOpen }) {
   const playerPositionsPerPlayerNumber = [
     [{ bottom: "-10vh" }],
     [
@@ -29,19 +28,38 @@ function Table({ gameDetails, tableDetails, playerDetails }) {
       { bottom: "45vh", chipPosition: "top" },
       { bottom: "20vh", right: "-5vw" },
     ],
-    {},
-    {},
+    [
+      { bottom: "-5vh", chipPosition: "bottom" },
+      { bottom: "20vh", left: "-5vw" },
+      // { bottom: "45vh", chipPosition: "top" },
+      { bottom: "20vh", right: "-5vw" },
+      { bottom: "42vh", right: "10vw", chipPosition: "top" },
+      { bottom: "42vh", left: "10vw", chipPosition: "top" },
+    ],
+    [
+      { bottom: "-5vh", chipPosition: "bottom" },
+      { bottom: "20vh", left: "-5vw" },
+      { bottom: "45vh", chipPosition: "top" },
+      { bottom: "20vh", right: "-5vw" },
+    ],
     {},
     {},
     {},
   ];
 
   const playerPositions =
-    playerPositionsPerPlayerNumber[tableDetails.playersPerTable - 1];
+    playerPositionsPerPlayerNumber[gameDetails.playersPerTable - 1];
 
   const emptySeats = [];
 
-  for (let i = tableDetails.players.length; i < tableDetails.maxPlayers; i++) {
+  console.log("FERGUS PLAYER POSITIONS", playerPositions, tableDetails);
+
+  for (
+    let i = tableDetails.players.length;
+    i < gameDetails.playersPerTable;
+    i++
+  ) {
+    console.log("FERGUS EMPTY SEATS", i, playerPositions[i]);
     emptySeats.push(<EmptyPlayer position={playerPositions[i]}></EmptyPlayer>);
   }
 
@@ -66,12 +84,6 @@ function Table({ gameDetails, tableDetails, playerDetails }) {
           "inset 0px 7px 10px rgba(0, 0, 0, 0.5), 0px 5px 15px rgba(0, 0, 0, 0.7)",
       }}
     >
-      <Box
-        sx={{ position: "fixed", right: 0, top: 0 }}
-        onClick={(e) => setGameLobbyOpen(true)}
-      >
-        Lobby
-      </Box>
       <Typography
         sx={{
           fontSize: "4vw",

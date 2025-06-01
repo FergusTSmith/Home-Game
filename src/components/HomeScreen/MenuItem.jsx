@@ -11,7 +11,7 @@ function MenuItem({ symbol, menuText, setInGame, onClick }) {
         // m: "1vw",
         position: "relative",
         display: "inline-block",
-        // background: "blue",
+        cursor: "pointer",
         width: "100%",
       }}
       onMouseEnter={() => {
