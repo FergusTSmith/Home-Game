@@ -3,18 +3,11 @@ import React from "react";
 
 function LobbySettings({ gameDetails }) {
   const {
-    gameSpeed,
-    gameState,
-    maxPlayers,
     playersPerTable,
     showHands,
-    smallBlind,
-    bigBlind,
-    startingChips,
-    type,
-    allowRebuys,
+    gameParameters,
   } = gameDetails;
-  console.log("ffs", gameDetails);
+
   return (
     <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
       <Typography
@@ -55,7 +48,7 @@ function LobbySettings({ gameDetails }) {
               textAlign: "right",
             }}
           >
-            {type}
+            {gameParameters.type}
           </Typography>
         </Box>
 
@@ -78,7 +71,7 @@ function LobbySettings({ gameDetails }) {
               textAlign: "right",
             }}
           >
-            {startingChips}
+            {gameParameters.startingChips}
           </Typography>
         </Box>
         <Box
@@ -100,7 +93,7 @@ function LobbySettings({ gameDetails }) {
               textAlign: "right",
             }}
           >
-            {bigBlind}
+            {gameParameters.bigBlind}
           </Typography>
         </Box>
 
@@ -123,7 +116,7 @@ function LobbySettings({ gameDetails }) {
               textAlign: "right",
             }}
           >
-            {smallBlind}
+            {gameParameters.smallBlind}
           </Typography>
         </Box>
 
@@ -146,7 +139,7 @@ function LobbySettings({ gameDetails }) {
               textAlign: "right",
             }}
           >
-            {gameSpeed}
+            {gameParameters.gameSpeed}
           </Typography>
         </Box>
 
@@ -169,7 +162,7 @@ function LobbySettings({ gameDetails }) {
               textAlign: "right",
             }}
           >
-            {maxPlayers}
+            {gameParameters.maxPlayers}
           </Typography>
         </Box>
 

@@ -1,10 +1,63 @@
-import React from "react";
-import Card from "../Card";
+import React, { useEffect, useState } from "react";
+import Card from "../UIAssets/Card";
 import { Box, Typography } from "@mui/material";
 import PokerChips from "./Chips";
 
-function Player({ name, chips, position, visible }) {
-  console.log("position", position);
+function Player({
+  name,
+  cards,
+  chips,
+  position,
+  visible,
+  playerTurn,
+  playerTime = 10000,
+  bet
+}) {
+  const sortedCards = cards
+    ? [...cards].sort((a, b) => a.localeCompare(b))
+    : [];
+
+  // Timer state for animation
+  const [progress, setProgress] = useState(1); // 1 = full, 0 = empty
+
+  // useEffect(() => {
+  //   if (!playerTurn) {
+  //     setProgress(1);
+  //     return;
+  //   }
+  //   let start = Date.now();
+  //   let frame;
+  //   const animate = () => {
+  //     const elapsed = Date.now() - start;
+  //     const newProgress = Math.max(0, 1 - elapsed / playerTime);
+  //     setProgress(newProgress);
+  //     if (newProgress > 0) {
+  //       frame = requestAnimationFrame(animate);
+  //     }
+  //   };
+  //   animate();
+  //   return () => {
+  //     cancelAnimationFrame(frame);
+  //     setProgress(1);
+  //   };
+  // }, [playerTurn, playerTime]);
+
+  // Calculate border color based on progress
+  let borderColor = "#1db954"; // green
+  if (progress < 0.5 && progress > 0.2) borderColor = "#ffe066"; // yellow
+  if (progress <= 0.2) borderColor = "#ff4d4f"; // red
+
+  // SVG border dimensions
+  const borderWidth = 3;
+  const boxWidth = 150; // was 180
+  const boxHeight = 44; // was 56
+  const borderRadius = 16; // match rx/ry for both Box and SVG
+  const rectWidth = boxWidth - borderWidth;
+  const rectHeight = boxHeight - borderWidth + 10;
+  const perimeter = 2 * (rectWidth + rectHeight);
+
+  console.log("FERGUS BET CHECKER [[[[[[[", bet)
+
   return (
     <Box
       sx={{
@@ -14,10 +67,8 @@ function Player({ name, chips, position, visible }) {
         position: "fixed",
         bottom: position.bottom,
         left: position.left,
-        // background: "gray",
-        minWidth: "100px",
-        width: "10vw",
-        // background: 'pink'
+        minWidth: "80px",
+        width: "9vw",
       }}
     >
       <Box
@@ -26,36 +77,74 @@ function Player({ name, chips, position, visible }) {
           width: "100%",
           justifyContent: "center",
           height: "10vh",
-          // background: 'yellow',
           position: "absolute",
           zIndex: -100,
           top: "-3.5vh",
         }}
       >
-        <Card visible={visible} community={false} value="As"></Card>
-        <Card visible={visible} community={false} value="10h"></Card>
+        {sortedCards &&
+          sortedCards.map((card) => (
+            <Card key={card} visible={visible} community={false} value={card} />
+          ))}
+        {sortedCards &&
+          sortedCards.length < 1 &&
+          Array.from({ length: 2 }, (_, i) => (
+            <Card key={i} visible={false} community={false} value={null} />
+          ))}
       </Box>
       <Box
         sx={{
-          width: "100%",
+          width: `${boxWidth}px`,
+          height: `${boxHeight}px`,
           background: "radial-gradient(circle at top, #3a4753 0%, #181b1f 60%)",
           display: "flex",
           color: "white",
-          alignText: "center",
-          alignItems: "center",
-          alignContent: "center",
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "column",
           pt: "0.5vw",
           pb: "0.5vw",
-          borderRadius: "2vw",
+          borderRadius: `${borderRadius}px`,
           boxShadow:
             "inset 0px 1.5px 3px rgba(0, 0, 0, 0.5), 0px 5px 15px rgba(0, 0, 0, 0.7)",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        <Typography sx={{ fontSize: "17px" }}>{name}</Typography>
-        <Typography sx={{ fontSize: "12px", color: "gray" }}>
+        {/* Timer border overlay using SVG */}
+        {playerTurn && (
+          <svg
+            width={boxWidth}
+            height={boxHeight}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              zIndex: 2,
+              pointerEvents: "none",
+              display: "block",
+            }}
+          >
+            <rect
+              x={borderWidth / 2}
+              y={borderWidth / 2}
+              width={boxWidth - borderWidth}
+              height={boxHeight - borderWidth}
+              rx={borderRadius - borderWidth / 2}
+              ry={borderRadius - borderWidth / 2}
+              fill="none"
+              stroke={borderColor}
+              strokeWidth={borderWidth}
+              strokeDasharray={perimeter}
+              strokeDashoffset={perimeter * (1 - progress)}
+              style={{
+                transition: "stroke 0.2s",
+              }}
+            />
+          </svg>
+        )}
+        <Typography sx={{ fontSize: "15px", zIndex: 3 }}>{name}</Typography>
+        <Typography sx={{ fontSize: "11px", color: "gray", zIndex: 3 }}>
           {chips}
         </Typography>
       </Box>
@@ -66,6 +155,7 @@ function Player({ name, chips, position, visible }) {
           bottom: position.chipPosition === "bottom" ? 100 : 0,
         }}
       >
+        {bet !== 0 && bet}
         <PokerChips amount={13145} />
       </Box>
     </Box>

@@ -1,9 +1,9 @@
 import { Box } from "@mui/material";
 import React from "react";
 
-function Pot() {
+function Pot({pot}) {
   return (
-    <Box sx={{ flex: "1", color: "white", height: "50%" }}>Pot: 20000</Box>
+    <Box sx={{ flex: "1", color: "white", height: "50%" }}>Pot: {pot}</Box>
   );
 }
 

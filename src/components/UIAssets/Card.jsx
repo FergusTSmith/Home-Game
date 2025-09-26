@@ -18,8 +18,8 @@ const suiteSymbols = {
 };
 
 function Card({ visible, value, community =true }) {
-  const numeric = value.slice(0, value.length - 1);
-  const suite = value.slice(-1);
+  const numeric = value && value.slice(0, value.length - 1);
+  const suite = value && value.slice(-1);
 
   return (
     <Box>
@@ -59,6 +59,7 @@ function Card({ visible, value, community =true }) {
           width: "95%",
           height: "90%",
           minHeight: '70px',
+          maxHeight: '100px',
           flex: "1",
           background: visible ? suiteColours[suite] : "gray",
           borderRadius: 2,

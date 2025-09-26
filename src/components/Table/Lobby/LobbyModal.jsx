@@ -4,8 +4,7 @@ import LobbySettings from "./LobbyComponents/LobbySettings";
 import LobbyPlayers from "./LobbyComponents/LobbyPlayers";
 import LobbyTables from "./LobbyComponents/LobbyTables";
 
-function LobbyModal({ gameDetails }) {
-  console.log("fergus gameDetials", gameDetails);
+function LobbyModal({ gameDetails, joinTable }) {
   return (
     <Box
       sx={{
@@ -59,7 +58,7 @@ function LobbyModal({ gameDetails }) {
         }}
       >
         <LobbyPlayers players={gameDetails.players} />
-        <LobbyTables tables={gameDetails.tables} />
+        <LobbyTables tables={gameDetails.tables} joinTable={joinTable} />
         <LobbySettings gameDetails={gameDetails} />
       </Box>
       <Box

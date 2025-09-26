@@ -17,6 +17,9 @@ function MenuIcon({ symbol, iconColour }) {
 
         fontSize: "8vw",
         transition: "color 0.5s ease",
+        "@media (max-aspect-ratio: 1/1)": {
+          fontSize: "10vw",
+        },
         // display: 'flex',
         // textAlign: 'center'
       }}

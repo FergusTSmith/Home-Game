@@ -1,10 +1,9 @@
 import React from "react";
-import Card from "../Card";
+import Card from "../UIAssets/Card";
 import { Box, Typography } from "@mui/material";
 import PokerChips from "./Chips";
 
-function EmptyPlayer({ position }) {
-  console.log("position", position);
+function EmptyPlayer({ position, joinable, seatNumber, takeSeat }) {
   return (
     <Box
       sx={{
@@ -33,21 +32,28 @@ function EmptyPlayer({ position }) {
           background: "radial-gradient(circle at top, #3a4753 0%, #181b1f 60%)",
           display: "flex",
           color: "white",
-          alignText: "center",
           alignItems: "center",
           alignContent: "center",
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "column",
           minHeight: "40px",
-          pt: "0.5vw",
-          pb: "0.5vw",
+          // pt: "0.5vw",
+          // pb: "0.5vw",
           borderRadius: "2vw",
           boxShadow:
             "inset 0px 1.5px 3px rgba(0, 0, 0, 0.5), 0px 5px 15px rgba(0, 0, 0, 0.7)",
         }}
+        onClick={(e) => {
+          if (joinable) {
+            takeSeat(seatNumber);
+          }
+        }}
       >
-        <Typography sx={{ fontSize: "17px" }}>Take Seat</Typography>
+        {joinable && (
+          <Typography sx={{ fontSize: "17px" }}>Take Seat</Typography>
+        )}
+        {!joinable && <Typography sx={{ fontSize: "17px" }}></Typography>}
       </Box>
       <Box
         sx={{

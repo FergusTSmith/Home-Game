@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Box from "@mui/material/Box";
 import Table from "./Table/Table";
 import HomeScreen from "./HomeScreen/HomeScreen";
@@ -7,6 +7,19 @@ import Background from "./Background/Background";
 
 const socket = io("http://127.0.0.1:5000", { transports: ["websocket"] });
 // Adjust URL to match Flask server
+
+const rankingMap = {
+  1: "High Card",
+  2: "One Pair",
+  3: "Two Pair",
+  4: "Three of a Kind",
+  5: "Straight",
+  6: "Flush",
+  7: "Full House",
+  8: "Four of a Kind",
+  9: "Straight Flush",
+  10: "Royal Flush",
+};
 
 function Home() {
   const [message, setMessage] = useState("");
@@ -17,13 +30,41 @@ function Home() {
 
   const [gameDetails, setGameDetails] = useState({});
   const [storedGameDetails, setStoredGameDetails] = useState();
-  const [playerDetails, setPlayerDetails] = useState();
+  const [playerDetails, setPlayerDetails] = useState({
+    playerId: null,
+    playerCards: [],
+  });
   const [tableDetails, setTableDetails] = useState();
+  const [playerTurn, setPlayerTurn] = useState(false);
+  const [activePlayer, setActivePlayer] = useState(null);
 
-  console.log("STORED GAME DETIALS", storedGameDetails);
+  const [openTableDetails, setOpenTableDetails] = useState({});
+
+  const [resultsText, setResultsText] = useState("");
+
+  const gameDetailsRef = useRef();
+  gameDetailsRef.current = gameDetails;
+
+  const tableDetailsRef = useRef();
+  tableDetailsRef.current = tableDetails;
+
+  const playerDetailsRef = useRef();
+  playerDetailsRef.current = playerDetails;
+
+  const openTableDetailsRef = useRef();
+  openTableDetailsRef.current = openTableDetails;
+
+  const activePlayerRef = useRef();
+  activePlayerRef.current = activePlayer;
+
+  const playerTurnRef = useRef();
+  playerTurnRef.current = playerTurn;
+
+  const resultsTextRef = useRef();
+  resultsTextRef.current = resultsText;
 
   const handleHomeButton = () => {
-    setStoredGameDetails(gameDetails);
+    setStoredGameDetails(gameDetailsRef.current);
     setGameDetails({});
   };
 
@@ -33,17 +74,14 @@ function Home() {
   };
 
   const isInGame = () => {
-    return Object.keys(gameDetails).length > 0;
+    return gameDetailsRef.current
+      ? Object.keys(gameDetailsRef.current).length > 0
+      : false;
   };
 
   useEffect(() => {
     socket.on("connect", () => {
       console.log("Connected to server");
-    });
-
-    socket.on("message", (data) => {
-      console.log("data", data);
-      setMessages((prevMessages) => [...prevMessages, data]);
     });
 
     socket.on("disconnect", () => {
@@ -52,34 +90,159 @@ function Home() {
 
     socket.on("gameStartSuccess", (data) => {
       setGameDetails(data.game);
-      setTableDetails(data.table);
+      // setTableDetails(data.table);
       // setPlayerDetails(data.hostPlayer);
     });
 
     socket.on("gameJoinSuccess", (data) => {
-      console.log("BOMBACLAAT");
-      console.log("fergus join  success", data);
+      setGameDetails(data.game);
+      // setTableDetails(data.table);
+      // setPlayerDetails(data.hostPlayer);
+    });
+
+    socket.on("gameJoinFailure", (data) => {
+      // setGameDetails(data.game);
+      // setTableDetails(data.table);
+      // setPlayerDetails(data.hostPlayer);
+    });
+    socket.on("player_joined", (data) => {
+      setGameDetails(data.game);
+
+      if (
+        tableDetailsRef.current &&
+        tableDetailsRef.current.uniqueID === data.table.uniqueID
+      ) {
+        setTableDetails(data.table);
+      }
+    });
+    socket.on("playerMove", (data) => {
+      console.log("FERGUS PLAYER MOVE", data);
+      // if (playerDetailsRef.current.playerId === data.player.playerId) {
+      //   setPlayerTurn(false);
+      // }
+      setTableDetails(data.table);
+      setActivePlayer(null);
+      console.log("FERGUS PLAYER MOVE !@!@!@!@!@!@!@!@!", data);
+    });
+    socket.on("player_taken_seat", (data) => {
       setGameDetails(data.game);
       setTableDetails(data.table);
-      // setPlayerDetails(data.hostPlayer);
+    });
+
+    socket.on("new_round", (data) => {
+      console.log("FERGUS NEW ROUND", data);
+      // setGameDetails(data.game) ;
+      setTableDetails(data.table);
+      setPlayerTurn(false);
+      setActivePlayer(null);
+    });
+    socket.on("player_seated", (data) => {
+      setGameDetails(data.game);
+      setTableDetails(data.table);
+    });
+
+    socket.on("hand_results", (data) => {
+      console.log("FERGUS HAND RESULTS", data);
+      setTableDetails(data.table);
+      if (data.multipleWinners) {
+        const winners =
+          data.winners.map((w) => `${w.winnerId}`).join(" & ") +
+          " with " + rankingMap[data.winningHandRank];
+        const resultsText = `The winners are ${winners}, winning ${data.pot}`;
+        setResultsText(resultsText);
+        return;
+      } else {
+        const resultsText = `The winner is ${data.winnerId} with ${
+          rankingMap[data.winningHandRank]
+        }, winning ${data.pot}`;
+        setResultsText(resultsText);
+
+      }
+    });
+
+    socket.on("blindsAssigned", (data) => {
+      console.log("FERGUS BLINDS ASSIGNED", data);
+    });
+
+    socket.on("game_started", (data) => {
+      console.log("FERGUS GAME STARTED");
+      setGameDetails(data.game);
+    });
+
+    socket.on("preFlopCards", (data) => {
+      setPlayerDetails({
+        ...playerDetailsRef.current,
+        playerCards: data,
+      });
+    });
+    socket.on("playerTurn", (data) => {
+      console.log(
+        "FERGUS PLAYERTURN fwqgoperjngierkqngeitgnetkgn",
+        playerDetailsRef.current.playerId,
+        data,
+        playerDetailsRef.current.playerId === data
+      );
+      if (playerDetailsRef.current.playerId === data.playerId) {
+        console.log(
+          "FERGUS SETTING PLAYER TUURN @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+        );
+        setPlayerTurn(true);
+      } else {
+        setPlayerTurn(false);
+      }
+      setActivePlayer(data.playerId);
+      setTableDetails(data.game);
+
+      console.log("FERGUS GAMEDETAILS", data.game);
+
+      console.log("FERGUS PLAYERTURN DATA", data);
+    });
+
+    socket.on("player_seated", (data) => {
+      console.log("FERGUS PLAYER SEATED", data);
+      setGameDetails(data.game);
+      if (data.table.uniqueID === tableDetailsRef.current.uniqueID) {
+        setTableDetails(data.table);
+      }
+    });
+    socket.on("table_opened", (data) => {
+      console.log("FERGUS TABLE OPENED", data);
+      console.log("FERGUS TABLE OPENED HANDLER", data.table);
+
+      //  setOpenTableDetails(data.table);
+      setTableDetails(data.data.table);
     });
     return () => {
       socket.off("message");
     };
   }, []);
 
-  console.log("playerDetails", playerDetails);
+  useEffect(() => {
+    console.log("FERGUS TABLE DETAILS", tableDetails);
+  }, [tableDetails]);
+
+  useEffect(() => {
+    if (resultsText) {
+      const timer = setTimeout(() => {
+        setResultsText("");
+      }, 10000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [resultsText]);
+
+  console.log("FERGUS PLAYERSTURN?!?!!", playerTurnRef.current);
 
   return (
     <Box
       sx={{
         margin: 0,
         width: "100%",
-        minHeight: "100vh",
+        height: "100vh",
         background: "radial-gradient(circle at top, #3a4753 0%, #0f1317 60%)",
         display: "flex",
-        justifyContent: "centre",
-        alignItems: "centre",
+        justifyContent: "center",
+        alignItems: "center",
         overflow: "hidden",
         textAlign: "center",
         position: "fixed",
@@ -129,15 +292,15 @@ function Home() {
             right: 0,
             fontSize: 15,
             color: "gray",
-
             cursor: "pointer",
             pt: 1.5,
             pb: 1.5,
             pl: 2,
             pr: 2,
+            right: 20,
+            top: 10,
             gap: 1,
-            background:
-              "radial-gradient(circle at top, #3a4753 0%, #181b1f 60%)",
+            borderRadius: 2,
           }}
         >
           <Box
@@ -192,16 +355,23 @@ function Home() {
           setInGame={setInGame}
           socket={socket}
           setPlayerDetails={setPlayerDetails}
-          playerDetails={playerDetails}
+          playerDetails={playerDetailsRef.current}
         ></HomeScreen>
       )}
       {isInGame() && (
         <Table
-          gameDetails={gameDetails}
-          tableDetails={tableDetails}
-          playerDetails={playerDetails}
+          gameDetails={gameDetailsRef.current}
+          tableDetails={tableDetailsRef.current}
+          openTableDetails={openTableDetailsRef.current}
+          playerDetails={playerDetailsRef.current}
+          playerTurn={
+            playerDetailsRef.current.playerId === activePlayerRef.current
+          }
           setGameLobbyOpen={setGameLobbyOpen}
+          activePlayer={activePlayerRef.current}
           gameLobbyOpen={gameLobbyOpen}
+          socket={socket}
+          resultsText={resultsTextRef.current}
         ></Table>
       )}
       {playerDetails && (
@@ -218,7 +388,7 @@ function Home() {
             transition: "opacity ease 1s",
           }}
         >
-          Current Username: {playerDetails}
+          Current Username: {playerDetailsRef.current.playerId}
         </Box>
       )}
     </Box>

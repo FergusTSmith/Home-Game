@@ -1,7 +1,9 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 
-function LobbyTables({ tables }) {
+function LobbyTables({ tables, joinTable }) {
+  // console.log("FERGUS TABLEs", tables, "actualPlayers", tables.players);
+
   return (
     <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
       <Typography
@@ -23,13 +25,22 @@ function LobbyTables({ tables }) {
         }}
       >
         {tables.map((table, i) => {
+          const actualPlayers = table.players?.filter(Boolean) || [];
           return (
             <Box
               sx={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
+                opacity: 0.7,
+                cursor: "pointer",
+                ":hover": {
+                  opacity: 1,
+                },
+                transition: "opacity ease 0.5s",
               }}
+              onClick={() => {
+                joinTable(table.uniqueID);}}
             >
               <Typography
                 sx={{
@@ -40,7 +51,7 @@ function LobbyTables({ tables }) {
                 }}
               >
                 {i + 1 + ") "}
-                Table {table.uniqueId}
+                Table {table.uniqueID}
               </Typography>
               <Typography
                 sx={{
@@ -51,7 +62,7 @@ function LobbyTables({ tables }) {
                 }}
               >
                 {" "}
-                {table.players.length}/{table.maxPlayers}
+                {actualPlayers.length}/{table.playersPerTable} players
               </Typography>
             </Box>
           );

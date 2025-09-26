@@ -1,21 +1,23 @@
 import { Box } from "@mui/material";
 import React from "react";
-import Card from "../Card";
+import Card from "../UIAssets/Card";
 
-function CommunityCards() {
+function CommunityCards({ communityCards }) {
   return (
     <Box
       sx={{
         height: "10vh",
-        flex: "1",
+        position: "fixed",
         display: "flex",
       }}
     >
-      <Card visible={true} value="As"></Card>
-      <Card visible={true} value="10h"></Card>
-      <Card visible={true} value="9c"></Card>
-      <Card visible={true} value="2d"></Card>
-      <Card visible={true} value="10h"></Card>
+      {communityCards && communityCards.length > 0 && (
+        <>
+          {communityCards.map((card, index) => (
+            <Card key={index} visible={true} value={card}></Card>
+          ))}
+        </>
+      )}
     </Box>
   );
 }

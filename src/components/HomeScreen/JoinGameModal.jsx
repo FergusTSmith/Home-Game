@@ -4,7 +4,7 @@ import CustomisedTextField from "./NewGameForm/CustomisedTextField";
 
 function JoinGameModal({socket, setPlayerDetails, playerDetails}) {
   const [formData, setFormData] = useState({
-    playerId: playerDetails,
+    playerId: playerDetails.playerId,
     gameId: "",
   });
   const handleChange = (e) => {
@@ -17,10 +17,7 @@ function JoinGameModal({socket, setPlayerDetails, playerDetails}) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setPlayerDetails(formData.playerId)
-    console.log("FERGUS PLAYERDETAILS 2222", formData.playerId)
-
-    console.log("Sending data to backend:", formData);
+    setPlayerDetails({ ...playerDetails, playerId: formData.playerId });
     socket.emit("join_game", formData);
   };
   return (
@@ -28,7 +25,7 @@ function JoinGameModal({socket, setPlayerDetails, playerDetails}) {
       component={"form"}
       onSubmit={handleSubmit}
       sx={{
-        height: "30vh",
+        height: "40vh",
         position: "fixed",
         top: "50%",
         left: "50%",
@@ -43,6 +40,9 @@ function JoinGameModal({socket, setPlayerDetails, playerDetails}) {
         flexDirection: "column",
         gap: 2,
         overflow: "scroll",
+        alignItems: "center", // <-- Center horizontally
+        justifyContent: "center", // <-- Center vertically
+        textAlign: "center", // <-- Center text
       }}
     >
       <Typography sx={{ color: "white", fontSize: 40, fontFamily: "Orbiton" }}>

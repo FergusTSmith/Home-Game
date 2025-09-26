@@ -12,7 +12,7 @@ function MenuItem({ symbol, menuText, setInGame, onClick }) {
         position: "relative",
         display: "inline-block",
         cursor: "pointer",
-        width: "100%",
+        // background: 'purple',
       }}
       onMouseEnter={() => {
         setItemColour("rgb(255,255,255)");
@@ -26,9 +26,13 @@ function MenuItem({ symbol, menuText, setInGame, onClick }) {
         style={{
           perspective: 1000,
           display: "inline-block",
-          // background: 'black',
+          // background: "pink",
           width: "10vw",
           height: "10vw",
+          "@media (max-aspect-ratio: 1/1)": {
+            width: "20vw",
+            height: "20vw",
+          },
         }}
       >
         <motion.div
@@ -58,6 +62,9 @@ function MenuItem({ symbol, menuText, setInGame, onClick }) {
                 // background: 'yellow',
                 width: "100%",
                 height: "100%",
+                "@media (max-aspect-ratio: 1/1)": {
+                  borderRadius: "40vw",
+                },
               }}
             >
               <MenuIcon iconColour={itemColour} symbol={symbol} />
@@ -77,6 +84,9 @@ function MenuItem({ symbol, menuText, setInGame, onClick }) {
               // background: 'yellow',
               width: "100%",
               height: "100%",
+              "@media (max-aspect-ratio: 1/1)": {
+                borderRadius: "40vw",
+              },
             }}
           >
             <MenuIcon iconColour={itemColour} symbol={symbol} />
@@ -91,6 +101,10 @@ function MenuItem({ symbol, menuText, setInGame, onClick }) {
           mt: "4vh",
           fontFamily: "Orbiton",
           transition: "color 0.5s ease",
+          "@media (max-aspect-ratio: 1/1)": {
+            mt: "2vh",
+            mb: 4
+          },
         }}
         onMouseEnter={() => setInGame(true)}
       >

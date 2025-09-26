@@ -28,20 +28,29 @@ function HomeScreen({ setInGame, socket, setPlayerDetails, playerDetails }) {
         width: "100%",
         textAlign: "center",
         position: "fixed",
-        // background: 'purple'
+        // background: "blue",
+        // gap: '1vw'
       }}
     >
       <Box
         sx={{
-          width: "60%",
+          width: "50%",
           display: "flex",
           height: "30vh",
+          // background: "pink",
           position: "fixed",
           left: "50%",
-          top: "60%",
+          top: "50%",
           transform: "translate(-50%, -50%)",
+          flexDirection: "row",
           mt: 12,
-          // background: 'pink'
+          gap: '3vw',
+          "@media (max-aspect-ratio: 1/1)": {
+            flexDirection: "column",
+            width: "100%",
+            height: "30vh",
+            mt: -4,
+          },
         }}
       >
         <MenuItem
