@@ -10,7 +10,9 @@ function PlayerControls({
   socket,
   playerTurn,
 }) {
-  const [betSize, setBetSize] = useState(0);
+  const [betSize, setBetSize] = useState(tableDetails?.currentBetAmount);
+  const betRef = React.useRef();
+  betRef.current = betSize;
 
   const handleReadyUp = () => {
     socket.emit("ready_up", {
@@ -21,27 +23,54 @@ function PlayerControls({
   };
 
   const handleFold = () => {
-    socket.emit("player_move", { move: "FOLD", }, gameDetails.gameId, playerDetails.playerId)
+    socket.emit(
+      "player_move",
+      { move: "FOLD" },
+      gameDetails.gameId,
+      playerDetails.playerId
+    );
     console.log("player foldering!!!!!", playerDetails, gameDetails);
-  }
+  };
 
   const handleCall = () => {
-    socket.emit("player_move", { move: "CALL" }, gameDetails.gameId, playerDetails.playerId)
+    socket.emit(
+      "player_move",
+      { move: "CALL" },
+      gameDetails.gameId,
+      playerDetails.playerId
+    );
     console.log("player calling!!!!!", playerDetails);
-  }
+  };
 
   const handleBet = () => {
-    socket.emit("player_move", { move: "BET", amount: betSize }, gameDetails.gameId, playerDetails.playerId)
+    if (
+      betSize < tableDetails?.bigBlind ||
+      betSize > playerDetails.chips ||
+      betSize < tableDetails.currentBetAmount
+    ) {
+      console.log("Invalid bet size!!!!!", betSize);
+      return;
+    }
+    socket.emit(
+      "player_move",
+      { move: "BET", amount: betSize },
+      gameDetails.gameId,
+      playerDetails.playerId
+    );
     console.log("player raising!!!!!", playerDetails);
-  }
+  };
 
-  const playerDetailsUpdated = tableDetails?.players.find(p => p.playerId === playerDetails.playerId)
+  const playerDetailsUpdated = tableDetails?.players.find(
+    (p) => p.playerId === playerDetails.playerId
+  );
 
   console.log("fergus tableDetails", tableDetails, playerDetailsUpdated);
 
   useEffect(() => {
-    console.log("FERGUS BETSIZE", betSize)
-  }, [betSize])
+    console.log("FERGUS BETSIZE 111111111", betSize, betRef.current);
+  }, [betSize]);
+
+  console.log("FERGUS TABLEDETAILS 111111111", tableDetails);
 
   return (
     <>
@@ -53,20 +82,25 @@ function PlayerControls({
             background:
               "radial-gradient(circle at top,rgb(84, 102, 119) 0%,rgb(40, 51, 62) 60%)",
             minWidth: "300px",
-            opacity: 0.5,
             borderRadius: 5,
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
             mb: 2,
             mr: 2,
-            opacity: playerTurn ? 1 : 0.2,
+            opacity:
+              !playerTurn && !(gameDetails.gameState === "WAITING") ? 0.2 : 0.8,
+            transition: 'opacity 0.4s ease-in-out',
           }}
         >
           {gameDetails.gameState === "WAITING" && tableDetails && (
-            <Button variant="contained" onClick={handleReadyUp}>
-              Ready Up
-            </Button>
+            <Box>
+              <CustomButton
+                text="Ready Up"
+                variant="contained"
+                onClick={handleReadyUp}
+              />
+            </Box>
           )}
           {!(gameDetails.gameState === "WAITING") && tableDetails && (
             <Box
@@ -94,7 +128,12 @@ function PlayerControls({
               >
                 <CustomButton text="Fold" onClick={handleFold}></CustomButton>
                 <CustomButton
-                  text="Check/Call"
+                  text={
+                    tableDetails?.currentBetAmount > 0 &&
+                    !(playerDetails?.betSize === tableDetails?.currentBetAmount)
+                      ? "Call"
+                      : "Check"
+                  }
                   onClick={handleCall}
                 ></CustomButton>
                 <CustomButton text="BET" onClick={handleBet}></CustomButton>
@@ -120,35 +159,88 @@ function PlayerControls({
                     gap: 1,
                   }}
                 >
-                  <CustomButton
-                    text="1/3"
-                    size="sm"
-                    onClick={() =>
-                      setBetSize(Math.round(tableDetails?.pot / 3))
-                    }
-                  ></CustomButton>
-                  <CustomButton
-                    text="2/3"
-                    size="sm"
-                    onClick={() =>
-                      setBetSize(Math.round((tableDetails?.pot / 3) * 2))
-                    }
-                  ></CustomButton>
-                  <CustomButton
-                    text="All In"
-                    size="sm"
-                    onClick={() =>
-                      setBetSize(Math.round(playerDetailsUpdated?.chips))
-                    }
-                  ></CustomButton>
+                  {tableDetails.roundNumber > 0 && (
+                    <>
+                      <CustomButton
+                        text="1/3"
+                        size="sm"
+                        onClick={() =>
+                          setBetSize(
+                            Math.max(
+                              Math.round(tableDetails?.potentialPot / 3),
+                              tableDetails?.bigBlind
+                            )
+                          )
+                        }
+                      ></CustomButton>
+                      <CustomButton
+                        text="2/3"
+                        size="sm"
+                        onClick={() =>
+                          setBetSize(
+                            Math.max(
+                              Math.round((tableDetails?.potentialPot / 3) * 2),
+                              tableDetails?.bigBlind
+                            )
+                          )
+                        }
+                      ></CustomButton>
+                      <CustomButton
+                        text="All In"
+                        size="sm"
+                        onClick={() =>
+                          setBetSize(Math.round(playerDetailsUpdated?.chips))
+                        }
+                      ></CustomButton>
+                    </>
+                  )}
+                  {tableDetails.roundNumber === 0 && (
+                    <>
+                      <CustomButton
+                        text="2 BB"
+                        size="sm"
+                        onClick={() =>
+                          setBetSize(
+                            Math.max(
+                              Math.round(tableDetails?.bigBlind * 2),
+                              tableDetails?.bigBlind
+                            )
+                          )
+                        }
+                      ></CustomButton>
+                      <CustomButton
+                        text="3 BB"
+                        size="sm"
+                        onClick={() =>
+                          setBetSize(
+                            Math.max(
+                              Math.round(tableDetails?.bigBlind * 3),
+                              tableDetails?.bigBlind
+                            )
+                          )
+                        }
+                      ></CustomButton>
+                      <CustomButton
+                        text="All In"
+                        size="sm"
+                        onClick={() =>
+                          setBetSize(Math.round(playerDetailsUpdated?.chips))
+                        }
+                      ></CustomButton>
+                    </>
+                  )}
                 </Box>
                 <Box
                   sx={{ flex: 2, display: "flex", justifyContent: "center" }}
                 >
                   <CustomSlider
                     playerChips={playerDetailsUpdated?.chips}
-                    betSize={betSize}
+                    betSize={betRef.current}
                     setBetSize={setBetSize}
+                    minimumBet={Math.max(
+                      tableDetails?.currentBetAmount,
+                      tableDetails?.bigBlind + tableDetails?.smallBlind
+                    )}
                   />
                 </Box>
               </Box>

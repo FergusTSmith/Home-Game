@@ -14,7 +14,7 @@ import Chip from "../Table/Chip";
 import NewGameMenu from "./NewGameMenu";
 import JoinGameModal from "./JoinGameModal";
 
-function HomeScreen({ setInGame, socket, setPlayerDetails, playerDetails }) {
+function HomeScreen({ setInGame, setPlayerDetails, playerDetails }) {
   const [newGameModal, setNewGameModal] = useState(false);
   const [joinGameModal, setJoinGameModal] = useState(false);
 
@@ -82,7 +82,6 @@ function HomeScreen({ setInGame, socket, setPlayerDetails, playerDetails }) {
           aria-describedby="modal-modal-description"
         >
           <NewGameMenu
-            socket={socket}
             setPlayerDetails={setPlayerDetails}
             playerDetails={playerDetails}
           />
@@ -94,7 +93,6 @@ function HomeScreen({ setInGame, socket, setPlayerDetails, playerDetails }) {
           aria-describedby="modal-modal-description"
         >
           <JoinGameModal
-            socket={socket}
             setPlayerDetails={setPlayerDetails}
             playerDetails={playerDetails}
           />

@@ -62,7 +62,6 @@ function EmptyPlayer({ position, joinable, seatNumber, takeSeat }) {
           bottom: position?.chipPosition === "bottom" ? 100 : 0,
         }}
       >
-        <PokerChips amount={13145} />
       </Box>
     </Box>
   );

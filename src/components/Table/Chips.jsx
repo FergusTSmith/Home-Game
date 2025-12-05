@@ -4,16 +4,16 @@ import Chip from "./Chip";
 
 // Example chip colors by denomination
 const CHIP_COLORS = {
-  1: "#E0E0E0",      // Light gray
-  5: "#F44336",      // Red
-  25: "#4CAF50",     // Green
-  100: "#212121",    // Black
-  500: "#9C27B0",    // Purple
-  1000: "pink",    // Purple
-  5000: "gray",    // Purple
-  20000: "blue",    // Purple
-  50000: "orange",    // Purple
-  100000: "white",    // Purple
+  1: { background: "#E0E0E0", shadow: "#B0B0B0" },
+  5: { background: "#F44336", shadow: "#760505" },
+  25: { background: "#4CAF50", shadow: "#1B5E20" },
+  100: { background: "#212121", shadow: "#000000" },
+  500: { background: "#9C27B0", shadow: "#4A148C" },
+  1000: { background: "pink", shadow: "#C51162" },
+  5000: { background: "#9E9E9E", shadow: "#444444" },
+  20000: { background: "blue", shadow: "#00008B" },
+  50000: { background: "orange", shadow: "#FF8C00" },
+  100000: { background: "white", shadow: "#C0C0C0" },
 };
 
 const getChipBreakdown = (amount) => {
@@ -34,12 +34,32 @@ const getChipBreakdown = (amount) => {
 const PokerChips = ({ amount = 0 }) => {
   const chips = getChipBreakdown(amount);
 
+  console.log("Chips breakdown:", chips);
+
   return (
-    <Box display="flex" alignItems="flex-end" gap={0} mt>
-      {Object.entries(chips).map(([denom, count], i) => (
-        <Box key={denom} position="relative" width={'1vw'} mb={i % 2 === 0 ? 0.5 : 0}>
-          {Array.from({ length: Math.floor(count / 20) }).map((_, i) => (
-            <Chip backgroundColor={CHIP_COLORS[denom]} i={i} denom={denom}/>
+    <Box
+      display="flex"
+      justifyContent="center"
+      gap={0}
+      flex={1}
+    >
+      {" "}
+      {Object.entries(chips).map(([denom, count], stackIndex) => (
+        <Box
+          key={denom}
+          position="relative"
+          width={"1vw"}
+          mb={stackIndex % 2 === 0 ? 0.5 : 0}
+          zIndex={stackIndex % 2 === 0 ? 0 : 100}
+        >
+          {Array.from({ length: Math.min(count, 10) }).map((_, i) => (
+            <Chip
+              key={i}
+              backgroundColor={CHIP_COLORS[denom].background}
+              shadowColor={CHIP_COLORS[denom].shadow}
+              i={i}
+              denom={denom}
+            />
           ))}
         </Box>
       ))}

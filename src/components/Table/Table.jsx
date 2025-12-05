@@ -10,6 +10,7 @@ import LobbyModal from "./Lobby/LobbyModal";
 import EmptyPlayer from "./EmptyPlayer";
 import PlayerControls from "./PlayerControls/PlayerControls";
 import { table } from "framer-motion/client";
+import ChatBox from "./PlayerControls/ChatBox";
 
 function Table({
   gameDetails,
@@ -20,7 +21,9 @@ function Table({
   playerTurn,
   activePlayer,
   socket,
-  resultsText
+  resultsText,
+  messages,
+  newMessage
 }) {
   const playerPositionsPerPlayerNumber = [
     [{ bottom: "-10vh" }],
@@ -30,9 +33,8 @@ function Table({
     ],
     [
       { bottom: "-5vh", chipPosition: "bottom" },
-      { bottom: "50vh", left: "80vw" },
-      { bottom: "45vh", chipPosition: "top" },
-      { bottom: "50vh", left: "80vw" },
+      { bottom: "40vh", left: "50vw", chipPosition: "bottom" },
+      { bottom: "40vh", left: "10vw", chipPosition: "top" },
     ],
     [
       { bottom: "-5vh", chipPosition: "bottom" },
@@ -97,16 +99,18 @@ function Table({
     });
   };
 
-  console.log("FERGUS TABLEDETAILS", tableDetails)
+  console.log("FERGUS TABLEDETAILS", tableDetails);
 
-  const playerSeat = tableDetails ? tableDetails.seats.findIndex(
-    (seat) => seat && seat.playerId === playerDetails.playerId
-  ) : -1
+  const playerSeat = tableDetails
+    ? tableDetails.seats.findIndex(
+        (seat) => seat && seat.playerId === playerDetails.playerId
+      )
+    : -1;
 
   const startIndex = playerSeat >= 0 ? playerSeat : 0;
 
   const rotatedIndices = Array.from(
-    { length: tableDetails ? tableDetails.seats.length : 0},
+    { length: tableDetails ? tableDetails.seats.length : 0 },
     (_, idx) => (startIndex + idx) % tableDetails.seats.length
   );
 
@@ -133,7 +137,20 @@ function Table({
               "inset 0px 7px 10px rgba(0, 0, 0, 0.5), 0px 5px 15px rgba(0, 0, 0, 0.7)",
           }}
         >
-          <Box sx={{position: 'absolute', top: '35vh', left: '50%', transform: 'translateX(-50%)', color: 'white', fontFamily: 'Orbiton', opacity: 0.8, fontSize: "2vw"}}>{resultsText}</Box>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "35vh",
+              left: "50%",
+              transform: "translateX(-50%)",
+              color: "white",
+              fontFamily: "Orbiton",
+              opacity: 0.8,
+              fontSize: "2vw",
+            }}
+          >
+            {resultsText}
+          </Box>
           <Typography
             sx={{
               fontSize: "4vw",
@@ -144,11 +161,12 @@ function Table({
           >
             HomeGame
           </Typography>
-          <CommunityCards communityCards={tableDetails.communityCards}></CommunityCards>
+          <CommunityCards
+            communityCards={tableDetails.communityCards}
+          ></CommunityCards>
           <Pot pot={tableDetails.pot}></Pot>
           {rotatedIndices.map((i) => {
             const player = tableDetails.seats[i];
-            console.log("PLAYERDETAILS, WTF?", player)
             return (
               <>
                 {player && (
@@ -159,10 +177,15 @@ function Table({
                     position={playerPositions[i]}
                     playerTurn={player.playerId === activePlayer}
                     playerTime={10000}
-                    visible={player.playerId === playerDetails.playerId}
+                    visible={
+                      player.playerId === playerDetails.playerId ||
+                      tableDetails.showingHands
+                    }
                     cards={
                       player.playerId === playerDetails.playerId
                         ? playerDetails.playerCards
+                        : tableDetails.showingHands
+                        ? tableDetails.playerHands[player?.playerId]
                         : []
                     }
                     bet={player.bet}
@@ -215,6 +238,15 @@ function Table({
           tableDetails={tableDetails}
           socket={socket}
           playerTurn={playerTurn}
+        />
+      </Box>
+      <Box sx={{ position: "fixed", left: 0, bottom: 0 }}>
+        <ChatBox
+          socket={socket}
+          gameDetails={gameDetails}
+          tableDetails={tableDetails}
+          playerDetails={playerDetails}
+          messages={messages}
         />
       </Box>
     </Box>

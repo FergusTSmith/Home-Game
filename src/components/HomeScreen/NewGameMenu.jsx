@@ -11,9 +11,12 @@ import {
   FormLabel,
 } from "@mui/material";
 import CustomisedTextField from "./NewGameForm/CustomisedTextField";
-import { io } from "socket.io-client";
+import { useSocket } from "../../context/SocketContext";
 
-function NewGameMenu({ socket, setPlayerDetails, playerDetails }) {
+const speeds = ["Very Slow", "Slow", "Normal", "Fast", "Very Fast"];
+
+function NewGameMenu({ setPlayerDetails, playerDetails }) {
+  const { socket } = useSocket();
   const [formData, setFormData] = useState({
     hostPlayer: playerDetails.playerId,
     maxPlayers: 10,
@@ -25,7 +28,7 @@ function NewGameMenu({ socket, setPlayerDetails, playerDetails }) {
     allowRebuys: true,
     maxRebuys: 2,
     showHands: true,
-    gameSpeed: "Medium",
+    gameSpeed: "Normal",
   });
 
   const handleChange = (e) => {
@@ -39,7 +42,9 @@ function NewGameMenu({ socket, setPlayerDetails, playerDetails }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     setPlayerDetails({ ...playerDetails, playerId: formData.hostPlayer });
-    socket.emit("create_game", formData);
+    if (socket) {
+      socket.emit("create_game", formData);
+    }
   };
 
   return (
@@ -202,7 +207,7 @@ function NewGameMenu({ socket, setPlayerDetails, playerDetails }) {
           Game Speed
         </label>
         <div style={{ display: "flex", gap: "1em" }}>
-          {["Very Slow", "Slow", "Medium", "Fast", "Very Fast"].map((speed) => (
+          {speeds.map((speed) => (
             <label key={speed} style={{ color: "white", fontWeight: 500 }}>
               <input
                 type="radio"

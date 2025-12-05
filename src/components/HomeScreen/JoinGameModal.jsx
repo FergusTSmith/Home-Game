@@ -1,8 +1,10 @@
 import { Box, Button, Typography } from "@mui/material";
 import React, { useState } from "react";
 import CustomisedTextField from "./NewGameForm/CustomisedTextField";
+import { useSocket } from "../../context/SocketContext";
 
-function JoinGameModal({socket, setPlayerDetails, playerDetails}) {
+function JoinGameModal({setPlayerDetails, playerDetails}) {
+  const { socket } = useSocket();
   const [formData, setFormData] = useState({
     playerId: playerDetails.playerId,
     gameId: "",
@@ -18,7 +20,9 @@ function JoinGameModal({socket, setPlayerDetails, playerDetails}) {
   const handleSubmit = (e) => {
     e.preventDefault();
     setPlayerDetails({ ...playerDetails, playerId: formData.playerId });
-    socket.emit("join_game", formData);
+    if (socket) {
+      socket.emit("join_game", formData);
+    }
   };
   return (
     <Box

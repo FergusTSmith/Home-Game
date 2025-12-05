@@ -1,7 +1,6 @@
 import { Box } from "@mui/material";
-import React from "react";
 
-function CustomSlider({ playerChips, betSize, setBetSize }) {
+function CustomSlider({ playerChips, betSize, setBetSize, minimumBet }) {
   return (
     <Box
       sx={{
@@ -18,7 +17,7 @@ function CustomSlider({ playerChips, betSize, setBetSize }) {
       <Box sx={{ flex: 8, display: "flex", alignItems: "center" }}>
         <input
           type="range"
-          min="1"
+          min={minimumBet}
           max={playerChips}
           value={betSize}
           onChange={(e) => setBetSize(Number(e.target.value))}
@@ -33,7 +32,6 @@ function CustomSlider({ playerChips, betSize, setBetSize }) {
             margin: 0,
             padding: 0,
             display: "block",
-            // Add transition for Webkit browsers (Chrome, Safari, Edge)
             transition: "background 0.3s, accent-color 0.3s",
           }}
         />

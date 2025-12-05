@@ -56,8 +56,6 @@ function Player({
   const rectHeight = boxHeight - borderWidth + 10;
   const perimeter = 2 * (rectWidth + rectHeight);
 
-  console.log("FERGUS BET CHECKER [[[[[[[", bet)
-
   return (
     <Box
       sx={{
@@ -148,16 +146,22 @@ function Player({
           {chips}
         </Typography>
       </Box>
-      <Box
-        sx={{
-          position: "absolute",
-          top: position.chipPosition === "top" ? 80 : -50,
-          bottom: position.chipPosition === "bottom" ? 100 : 0,
-        }}
-      >
-        {bet !== 0 && bet}
-        <PokerChips amount={13145} />
-      </Box>
+      {bet !== 0 && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: position.chipPosition === "top" ? "10vh" : "-6vh",
+            bottom: position.chipPosition === "bottom" ? 120 : 0,
+            color: "white",
+            fontFamily: "Orbiton",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <PokerChips amount={bet} />
+          <Box sx={{ flex: 1, fontSize: 10 }}>{bet}</Box>
+        </Box>
+      )}
     </Box>
   );
 }

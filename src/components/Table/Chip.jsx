@@ -1,30 +1,18 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
 
-function Chip({ i, backgroundColor, denom }) {
+function Chip({ i, backgroundColor, denom, shadowColor }) {
   return (
     <>
+
       <Box
         key={i}
         sx={{
-          width: 22,
+          width: 16,
           height: 10,
           borderRadius: "50%",
-          border: `0.5px solid darkgray`,
-          backgroundColor: backgroundColor,
-          position: "absolute",
-          bottom: `${i * 1.75 + 3}px`,
-          zIndex: i,
-        }}
-      />
-      <Box
-        key={i}
-        sx={{
-          width: 22,
-          height: 10,
-          borderRadius: "50%",
-          border: `0.5px solid darkgray`,
-          backgroundColor: backgroundColor,
+          border: `0.5px solid ${shadowColor}99`,
+          
           position: "absolute",
           bottom: `${i * 1.75 + 3.25}px`,
           zIndex: i,
@@ -33,10 +21,10 @@ function Chip({ i, backgroundColor, denom }) {
       <Box
         key={i}
         sx={{
-          width: 22,
+          width: 16,
           height: 10,
           borderRadius: "50%",
-          border: `0.5px solid darkgray`,
+          border: `0.5px solid ${shadowColor}99`,
           backgroundColor: backgroundColor,
           position: "absolute",
           bottom: `${i * 1.75 + 3.5}px`,
@@ -46,10 +34,10 @@ function Chip({ i, backgroundColor, denom }) {
       <Box
         key={i}
         sx={{
-          width: 22,
+          width: 16,
           height: 10,
           borderRadius: "50%",
-          border: `0.5px solid darkgray`,
+          border: `0.5px solid ${shadowColor}99`,
           backgroundColor: backgroundColor,
           position: "absolute",
           bottom: `${i * 1.75 + 3.75}px`,
@@ -59,10 +47,10 @@ function Chip({ i, backgroundColor, denom }) {
       <Box
         key={i}
         sx={{
-          width: 22,
+          width: 16,
           height: 10,
           borderRadius: "50%",
-          border: `0.5px solid white`,
+          border: `0.5px solid ${shadowColor}99`,
           backgroundColor: backgroundColor,
           position: "absolute",
           bottom: `${i * 1.75 + 4}px`,
@@ -72,12 +60,13 @@ function Chip({ i, backgroundColor, denom }) {
         <Typography
           sx={{
             color: "white",
-            fontSize: 5,
-            fontWeight: 'bold',
+            fontSize: 4,
+            fontWeight: "bold",
             position: "absolute",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
+            fontFamily: "Orbiton",
           }}
         >
           {denom}

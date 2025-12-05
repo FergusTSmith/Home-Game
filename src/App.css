@@ -55,3 +55,10 @@ html, body {
   font-weight: 100 900; /* Variable font range */
   font-style: normal;
 }
+
+@font-face {
+  font-family: 'osrs';
+  src: url('/src/assets/fonts/runescape_uf.ttf') format('truetype');
+  font-weight: 100 900; /* Variable font range */
+  font-style: normal;
+}
