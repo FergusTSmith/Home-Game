@@ -78,19 +78,22 @@ function PlayerControls({
         <Box
           sx={{
             width: "40vw",
-            height: "17vh",
-            background:
-              "radial-gradient(circle at top,rgb(84, 102, 119) 0%,rgb(40, 51, 62) 60%)",
+            height: "20vh",
+            // background:
+            //   "radial-gradient(circle at top,rgb(84, 102, 119) 0%,rgb(40, 51, 62) 60%)",
             minWidth: "300px",
+            backdropFilter: "blur(12px)",
+            borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+            borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
             borderRadius: 5,
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            mb: 2,
+            mb: 5,
             mr: 2,
             opacity:
               !playerTurn && !(gameDetails.gameState === "WAITING") ? 0.2 : 0.8,
-            transition: 'opacity 0.4s ease-in-out',
+            transition: "opacity 0.4s ease-in-out",
           }}
         >
           {gameDetails.gameState === "WAITING" && tableDetails && (

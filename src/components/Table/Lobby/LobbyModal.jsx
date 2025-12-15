@@ -21,8 +21,11 @@ function LobbyModal({ gameDetails, joinTable }) {
         // display: 'flex',
         // flexDirection: 'column',
         justifyContent: "center",
-        background:
-          "radial-gradient(circle at top, #3a4753 0%,rgb(21, 27, 33) 60%)",
+        // background:
+        //   "radial-gradient(circle at top, #3a4753 0%,rgb(21, 27, 33) 60%)",
+        backdropFilter: "blur(12px)",
+        borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+        borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
         padding: 3,
       }}
     >

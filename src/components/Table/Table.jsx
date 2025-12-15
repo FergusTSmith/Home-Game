@@ -1,5 +1,5 @@
 import { Box, Dialog, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Card from "../UIAssets/Card";
 import Player from "./Player";
 import CommunityCards from "./CommunityCards";
@@ -23,7 +23,7 @@ function Table({
   socket,
   resultsText,
   messages,
-  newMessage
+  playerMessages,
 }) {
   const playerPositionsPerPlayerNumber = [
     [{ bottom: "-10vh" }],
@@ -99,7 +99,7 @@ function Table({
     });
   };
 
-  console.log("FERGUS TABLEDETAILS", tableDetails);
+  console.log("FERGUS UGHGUGGHGHGHGHG", playerMessages);
 
   const playerSeat = tableDetails
     ? tableDetails.seats.findIndex(
@@ -114,6 +114,19 @@ function Table({
     (_, idx) => (startIndex + idx) % tableDetails.seats.length
   );
 
+  const playerMessageCheck = () => {};
+
+  useEffect(
+    (playerId) => {
+      setTimeout(() => {}, [5000]);
+      console.log(
+        "FERGUS PLAYER MESSAGE 3IR9 0WGJRIGHJ",
+        messages,
+        tableDetails
+      );
+    },
+    [messages]
+  );
   return (
     <Box>
       {tableDetails && (
@@ -167,6 +180,12 @@ function Table({
           <Pot pot={tableDetails.pot}></Pot>
           {rotatedIndices.map((i) => {
             const player = tableDetails.seats[i];
+
+            console.log(
+              "FERGUS UGHGUGGHGHGHGHG 22222",
+              player?.playerId,
+              playerMessages[player?.playerId]
+            );
             return (
               <>
                 {player && (
@@ -177,6 +196,7 @@ function Table({
                     position={playerPositions[i]}
                     playerTurn={player.playerId === activePlayer}
                     playerTime={10000}
+                    message={playerMessages[player?.playerId]}
                     visible={
                       player.playerId === playerDetails.playerId ||
                       tableDetails.showingHands

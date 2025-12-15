@@ -29,6 +29,7 @@ function Home() {
     setPlayerDetails,
     setResultsText,
     messagesRef,
+    playerMessageRef,
   } = useGameState();
 
   const { socket } = useSocket();
@@ -188,6 +189,7 @@ function Home() {
           socket={socket}
           resultsText={resultsTextRef.current}
           messages={messagesRef.current}
+          playerMessages={playerMessageRef.current}
         ></Table>
       )}
       {playerDetails && (

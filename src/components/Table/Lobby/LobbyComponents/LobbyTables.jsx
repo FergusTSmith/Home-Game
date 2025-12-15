@@ -19,8 +19,8 @@ function LobbyTables({ tables, joinTable }) {
       <Box
         sx={{
           flex: 1,
-          border: "2px solid #adadad",
-          borderRadius: 3,
+          border: "2px solid rgb(148, 148, 148)",
+          borderRadius: 1,
           padding: 1,
         }}
       >
@@ -40,7 +40,8 @@ function LobbyTables({ tables, joinTable }) {
                 transition: "opacity ease 0.5s",
               }}
               onClick={() => {
-                joinTable(table.uniqueID);}}
+                joinTable(table.uniqueID);
+              }}
             >
               <Typography
                 sx={{

@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useState, useRef } from 'react';
+import React, { createContext, useContext, useState, useRef } from "react";
 
 const GameStateContext = createContext();
 
 export const useGameState = () => {
   const context = useContext(GameStateContext);
   if (!context) {
-    throw new Error('useGameState must be used within a GameStateProvider');
+    throw new Error("useGameState must be used within a GameStateProvider");
   }
   return context;
 };
@@ -18,6 +18,8 @@ export const GameStateProvider = ({ children }) => {
 
   const [gameDetails, setGameDetails] = useState({});
   const [storedGameDetails, setStoredGameDetails] = useState();
+
+  const [playerMessage, setPlayerMessage] = useState([]);
   const [playerDetails, setPlayerDetails] = useState({
     playerId: null,
     playerCards: [],
@@ -53,6 +55,9 @@ export const GameStateProvider = ({ children }) => {
 
   const messagesRef = useRef();
   messagesRef.current = messages;
+
+  const playerMessageRef = useRef();
+  playerMessageRef.current = playerMessage;
 
   // Helper functions
   const handleHomeButton = () => {
@@ -95,6 +100,8 @@ export const GameStateProvider = ({ children }) => {
     setOpenTableDetails,
     resultsText,
     setResultsText,
+    playerMessage,
+    setPlayerMessage,
 
     // Refs
     gameDetailsRef,
@@ -105,6 +112,7 @@ export const GameStateProvider = ({ children }) => {
     playerTurnRef,
     resultsTextRef,
     messagesRef,
+    playerMessageRef,
 
     // Helper functions
     handleHomeButton,

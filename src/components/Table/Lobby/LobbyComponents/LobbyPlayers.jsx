@@ -18,7 +18,7 @@ function LobbyPlayers({ players }) {
         sx={{
           flex: 1,
           border: "2px solid #adadad",
-          borderRadius: 3,
+          borderRadius: 2,
           padding: 1,
         }}
       >

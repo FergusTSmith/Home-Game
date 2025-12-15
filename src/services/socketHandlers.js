@@ -24,6 +24,8 @@ export const setupSocketHandlers = (socket, gameState) => {
     playerDetailsRef,
     setMessages,
     messagesRef,
+    setPlayerMessage,
+    playerMessageRef,
   } = gameState;
 
   // Connection handlers
@@ -80,7 +82,7 @@ export const setupSocketHandlers = (socket, gameState) => {
     setActivePlayer(null);
   });
 
-  socket.on('showHands', (data) => {
+  socket.on("showHands", (data) => {
     console.log("FERGUS SHOW HANDS", data);
     setTableDetails(data.table);
   });
@@ -94,11 +96,12 @@ export const setupSocketHandlers = (socket, gameState) => {
   socket.on("hand_results", (data) => {
     console.log("FERGUS HAND RESULTS", data);
     setTableDetails(data.table);
-    
+
     if (data.multipleWinners) {
       const winners =
         data.winners.map((w) => `${w.winnerId}`).join(" & ") +
-        " with " + rankingMap[data.winningHandRank];
+        " with " +
+        rankingMap[data.winningHandRank];
       const resultsText = `The winners are ${winners}, winning ${data.pot}`;
       setResultsText(resultsText);
     } else {
@@ -111,8 +114,8 @@ export const setupSocketHandlers = (socket, gameState) => {
 
   // Blinds and game setup
   socket.on("blindsAssigned", (data) => {
-    console.log("FERGUS BLINDS ASSIGNED", data)
-    setTableDetails(data.table)
+    console.log("FERGUS BLINDS ASSIGNED", data);
+    setTableDetails(data.table);
   });
 
   socket.on("game_started", (data) => {
@@ -136,7 +139,7 @@ export const setupSocketHandlers = (socket, gameState) => {
       data,
       playerDetailsRef.current.playerId === data
     );
-    
+
     if (playerDetailsRef.current.playerId === data.playerId) {
       console.log(
         "FERGUS SETTING PLAYER TUURN @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
@@ -145,7 +148,7 @@ export const setupSocketHandlers = (socket, gameState) => {
     } else {
       setPlayerTurn(false);
     }
-    
+
     setActivePlayer(data.playerId);
     setTableDetails(data.game);
 
@@ -162,6 +165,24 @@ export const setupSocketHandlers = (socket, gameState) => {
   socket.on("new_chat_message", (data) => {
     console.log("FERGUS NEW CHAT MESSAGE", data);
     setMessages([...messagesRef.current, data]);
+    setPlayerMessage({
+      ...playerMessageRef.current,
+      [data.playerId]: data.message,
+    });
+
+    setTimeout(() => {
+      setPlayerMessage({ ...playerMessageRef.current, [data.playerId]: "" });
+    }, [3000]);
+    // if (
+    //   playerDetailsRef &&
+    //   data.playerId === playerDetailsRef.current.playerId
+    // ) {
+    //   setPlayerMessage(data.message);
+    //   console.log("fergus test passed");
+    //   setTimeout(() => {
+    //     setPlayerMessage();
+    //   }, [5000]);
+    // }
   });
 
   return () => {
