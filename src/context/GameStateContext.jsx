@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useState, useRef } from "react";
+import React, { createContext, useContext, useState, useRef } from 'react';
 
 const GameStateContext = createContext();
 
 export const useGameState = () => {
   const context = useContext(GameStateContext);
   if (!context) {
-    throw new Error("useGameState must be used within a GameStateProvider");
+    throw new Error('useGameState must be used within a GameStateProvider');
   }
   return context;
 };
@@ -15,11 +15,10 @@ export const GameStateProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
   const [inGame, setInGame] = useState(false);
   const [gameLobbyOpen, setGameLobbyOpen] = useState(true);
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
   const [gameDetails, setGameDetails] = useState({});
-  const [storedGameDetails, setStoredGameDetails] = useState();
-
-  const [playerMessage, setPlayerMessage] = useState([]);
+  const [storedGameDetails, setStoredGameDetails] = useState([]);
   const [playerDetails, setPlayerDetails] = useState({
     playerId: null,
     playerCards: [],
@@ -31,6 +30,8 @@ export const GameStateProvider = ({ children }) => {
   const [openTableDetails, setOpenTableDetails] = useState({});
   const [resultsText, setResultsText] = useState("");
 
+  const [playerMessage, setPlayerMessage] = useState({});
+
   // Refs
   const gameDetailsRef = useRef();
   gameDetailsRef.current = gameDetails;
@@ -40,6 +41,9 @@ export const GameStateProvider = ({ children }) => {
 
   const playerDetailsRef = useRef();
   playerDetailsRef.current = playerDetails;
+
+  const playerMessageRef = useRef();
+  playerMessageRef.current = playerMessage;
 
   const openTableDetailsRef = useRef();
   openTableDetailsRef.current = openTableDetails;
@@ -56,17 +60,24 @@ export const GameStateProvider = ({ children }) => {
   const messagesRef = useRef();
   messagesRef.current = messages;
 
-  const playerMessageRef = useRef();
-  playerMessageRef.current = playerMessage;
-
   // Helper functions
   const handleHomeButton = () => {
-    setStoredGameDetails(gameDetailsRef.current);
+    setStoredGameDetails([...storedGameDetails, gameDetailsRef.current]);
     setGameDetails({});
   };
 
-  const rejoinGame = () => {
-    setGameDetails(storedGameDetails);
+  
+
+  const settingsModalOpenRef = useRef();
+  settingsModalOpenRef.current = settingsModalOpen;
+
+  const rejoinGame = (gameId) => {
+    console.log(
+      "FERGUS REJOIN GAME ID @@@@@@@@@@@@@@",
+      gameId,
+      storedGameDetails[storedGameDetails.findIndex((g) => g.gameId === gameId)]
+    );
+    setGameDetails(storedGameDetails[storedGameDetails.findIndex(g => g.gameId === gameId)]);
     setStoredGameDetails({});
   };
 
@@ -100,8 +111,8 @@ export const GameStateProvider = ({ children }) => {
     setOpenTableDetails,
     resultsText,
     setResultsText,
-    playerMessage,
     setPlayerMessage,
+    playerMessage,
 
     // Refs
     gameDetailsRef,
@@ -114,7 +125,9 @@ export const GameStateProvider = ({ children }) => {
     messagesRef,
     playerMessageRef,
 
-    // Helper functions
+  
+    settingsModalOpen,
+    setSettingsModalOpen,  // Helper functions
     handleHomeButton,
     rejoinGame,
     isInGame,

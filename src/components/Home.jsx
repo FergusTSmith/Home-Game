@@ -30,6 +30,8 @@ function Home() {
     setResultsText,
     messagesRef,
     playerMessageRef,
+    settingsModalOpen,
+    setSettingsModalOpen,
   } = useGameState();
 
   const { socket } = useSocket();
@@ -50,7 +52,14 @@ function Home() {
     }
   }, [resultsText, setResultsText]);
 
-  console.log("FERGUS PLAYERSTURN?!?!!", playerTurnRef.current);
+  useEffect(() => {
+    if (socket) {
+      socket.emit("auto_login");
+      console.log("FERGUS AUTOLOGIN EMITTED +++++++++++++++++++++++++");
+    }
+  }, [socket]);
+
+  console.log("FERGUS PLAYERSTURN?!?!!", storedGameDetails);
 
   return (
     <Box
@@ -127,17 +136,20 @@ function Home() {
                 color: "white",
               },
               transition: "color ease 0.5s",
+              fontFamily: "Orbiton",
             }}
           >
             Lobby
           </Box>
           <Box>|</Box>
           <Box
+            onClick={(e) => setSettingsModalOpen(true)}
             sx={{
               ":hover": {
                 color: "white",
               },
               transition: "color ease 0.5s",
+              fontFamily: "Orbiton",
             }}
           >
             Settings
@@ -161,9 +173,18 @@ function Home() {
             transition: "opacity ease 1s",
             cursor: "pointer",
           }}
-          onClick={() => rejoinGame()}
         >
-          Rejoin Game? {storedGameDetails.gameId}
+          {storedGameDetails.length > 0 && (
+            <>
+              Rejoin Game?
+              {storedGameDetails.map((game, index) => (
+                <Box key={index} onClick={() => rejoinGame(game.gameId)}>
+                  {" "}
+                  - {game.gameId}{" "}
+                </Box>
+              ))}
+            </>
+          )}
         </Box>
       )}
 

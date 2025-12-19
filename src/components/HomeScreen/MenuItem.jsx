@@ -13,6 +13,9 @@ function MenuItem({ symbol, menuText, setInGame, onClick }) {
         display: "inline-block",
         cursor: "pointer",
         // background: 'purple',
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
       }}
       onMouseEnter={() => {
         setItemColour("rgb(255,255,255)");
@@ -62,6 +65,9 @@ function MenuItem({ symbol, menuText, setInGame, onClick }) {
                 // background: 'yellow',
                 width: "100%",
                 height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
                 "@media (max-aspect-ratio: 1/1)": {
                   borderRadius: "40vw",
                 },
@@ -84,6 +90,9 @@ function MenuItem({ symbol, menuText, setInGame, onClick }) {
               // background: 'yellow',
               width: "100%",
               height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               "@media (max-aspect-ratio: 1/1)": {
                 borderRadius: "40vw",
               },

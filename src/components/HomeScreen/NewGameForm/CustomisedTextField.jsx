@@ -5,12 +5,20 @@ function CustomisedTextField({
   name,
   value,
   onChange,
-  sx,
+  style,
   placeholder,
-  size
+  color,
+  size,
+  bodyStyle,
 }) {
   return (
-    <div style={{ width: "50%", marginBottom: "1.5em" }}>
+    <div
+      style={{
+        ...style,
+        marginBottom: "1.5em",
+        background: color,
+      }}
+    >
       {label && (
         <label
           htmlFor={name}
@@ -21,7 +29,7 @@ function CustomisedTextField({
             fontFamily: "Orbiton, sans-serif",
             fontWeight: 600,
             letterSpacing: "0.03em",
-            fontSize: "0.5em",
+            fontSize: "0.6em",
           }}
         >
           {label}
@@ -35,7 +43,8 @@ function CustomisedTextField({
         placeholder={placeholder}
         autoComplete="off"
         style={{
-          width: "80%",
+          ...bodyStyle,
+          width: "50%",
           padding: "0.7em 1em",
           border: "1.5px solid #b3b4b5",
           borderRadius: "7px",
@@ -46,6 +55,8 @@ function CustomisedTextField({
           outline: "none",
           transition: "border-color 0.2s, box-shadow 0.2s",
           boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+          textAlign: "center",
+          fontSize: "0.8em",
         }}
         onFocus={(e) =>
           (e.target.style.borderColor = "rgba(29, 156, 185, 0.8)")

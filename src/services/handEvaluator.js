@@ -107,6 +107,40 @@ class PokerHandEvaluator {
     return JSON.stringify(values) === JSON.stringify(aceLow);
   }
 
+  sortHandForDisplay(hand, rank) {
+    if (!hand || !Array.isArray(hand)) return hand;
+
+    const valueCounts = {};
+    for (const card of hand) {
+      const value = this.getCardValue(card);
+      if (!valueCounts[value]) valueCounts[value] = [];
+      valueCounts[value].push(card);
+    }
+
+    const sortedGroups = Object.entries(valueCounts)
+      .map(([v, cards]) => [parseInt(v, 10), cards])
+      .sort((a, b) => {
+        // First sort by count (desc)
+        if (b[1].length !== a[1].length) return b[1].length - a[1].length;
+        // Then by card value (desc)
+        return b[0] - a[0];
+      });
+
+    const simpleSortRanks = [10, 9, 6, 5, 1];
+    if (simpleSortRanks.includes(rank)) {
+      return [...hand].sort((a, b) => this.getCardValue(b) - this.getCardValue(a));
+    }
+
+    const result = [];
+    for (const [, cards] of sortedGroups) {
+      const groupSorted = [...cards].sort((a, b) => this.getCardValue(b) - this.getCardValue(a));
+      result.push(...groupSorted);
+    }
+    return result;
+  }
+
+  
+
   evaluateHand(cards) {
     const cardValues = cards
       .map((card) => this.getCardValue(card))

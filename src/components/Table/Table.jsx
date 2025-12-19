@@ -9,8 +9,9 @@ import PokerChips from "./Chips";
 import LobbyModal from "./Lobby/LobbyModal";
 import EmptyPlayer from "./EmptyPlayer";
 import PlayerControls from "./PlayerControls/PlayerControls";
-import { table } from "framer-motion/client";
+import { g, table } from "framer-motion/client";
 import ChatBox from "./PlayerControls/ChatBox";
+import { useGameState } from "../../context/GameStateContext";
 
 function Table({
   gameDetails,
@@ -76,6 +77,8 @@ function Table({
     ],
   ];
 
+  const { settingsModalOpen , setSettingsModalOpen } = useGameState();
+
   const playerPositions =
     playerPositionsPerPlayerNumber[gameDetails.playersPerTable - 1];
 
@@ -84,10 +87,10 @@ function Table({
   const takeSeat = (seatNumber) => {
     socket.emit(
       "takeSeat",
-      gameDetails.gameId,
-      playerDetails.playerId,
-      tableDetails.uniqueID,
-      seatNumber
+      {gameId: gameDetails.gameId,
+      playerId: playerDetails.playerId,
+      tableId: tableDetails.uniqueID,
+      seatNumber: seatNumber}
     );
   };
 
@@ -127,6 +130,8 @@ function Table({
     },
     [messages]
   );
+
+  console.log("FERGUS GAMEDETAILS", gameDetails);
   return (
     <Box>
       {tableDetails && (
@@ -182,9 +187,8 @@ function Table({
             const player = tableDetails.seats[i];
 
             console.log(
-              "FERGUS UGHGUGGHGHGHGHG 22222",
-              player?.playerId,
-              playerMessages[player?.playerId]
+              "FERGUS PLAYERMAP",
+              player
             );
             return (
               <>
@@ -209,6 +213,8 @@ function Table({
                         : []
                     }
                     bet={player.bet}
+                    sittingOut={player.sittingOut}
+                    gameSpeed={gameDetails.gameParameters.gameSpeed}
                   />
                 )}
                 {!player && (

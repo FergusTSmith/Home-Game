@@ -19,7 +19,10 @@ export const SocketProvider = ({ children }) => {
   const gameState = useGameState();
 
   useEffect(() => {
-    socketRef.current = io("http://127.0.0.1:5000", { transports: ["websocket"] });
+    socketRef.current = io("http://127.0.0.1:5000", {
+      withCredentials: true,
+      transports: ["websocket"],
+    });
     
     setupSocketHandlers(socketRef.current, gameState);
 
@@ -32,9 +35,48 @@ export const SocketProvider = ({ children }) => {
     };
   }, []);
 
+   const reconnectSocket = () => {
+     return new Promise((resolve, reject) => {
+       try {
+         if (socketRef.current) {
+           socketRef.current.disconnect();
+         }
+
+         const newSocket = io("http://127.0.0.1:5000", {
+           withCredentials: true,
+           transports: ["websocket"],
+         });
+
+         // Replace ref immediately so consumers get the new socket reference
+         socketRef.current = newSocket;
+
+         // Set up handlers for the new socket
+         setupSocketHandlers(socketRef.current, gameState);
+         setSocketReady(true);
+
+         // Resolve when the socket connects, or reject on connection error
+         const onConnect = () => {
+           newSocket.off("connect_error", onConnectError);
+           resolve(newSocket);
+         };
+
+         const onConnectError = (err) => {
+           newSocket.off("connect", onConnect);
+           reject(err);
+         };
+
+         newSocket.once("connect", onConnect);
+         newSocket.once("connect_error", onConnectError);
+       } catch (err) {
+         reject(err);
+       }
+     });
+   };
+
   const value = {
     socket: socketRef.current,
     socketReady,
+    reconnectSocket
   };
 
   return (

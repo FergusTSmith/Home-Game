@@ -34,7 +34,9 @@ const getChipBreakdown = (amount) => {
 const PokerChips = ({ amount = 0 }) => {
   const chips = getChipBreakdown(amount);
 
-  console.log("Chips breakdown:", chips);
+  if (process.env.NODE_ENV === "development") {
+    console.log("Chips breakdown:", chips);
+  }
 
   return (
     <Box
@@ -54,7 +56,7 @@ const PokerChips = ({ amount = 0 }) => {
         >
           {Array.from({ length: Math.min(count, 10) }).map((_, i) => (
             <Chip
-              key={i}
+              key={`${denom}-${i}`}
               backgroundColor={CHIP_COLORS[denom].background}
               shadowColor={CHIP_COLORS[denom].shadow}
               i={i}

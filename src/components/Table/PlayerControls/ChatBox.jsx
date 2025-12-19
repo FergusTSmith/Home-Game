@@ -4,6 +4,19 @@ import CustomisedTextField from "../../HomeScreen/NewGameForm/CustomisedTextFiel
 import ChatBoxTextEntry from "../../ComponentAssets/ChatBoxTextEntry";
 import PokerHandEvaluator from "../../../services/handEvaluator";
 
+// Ranking map for poker hands
+const rankingMap = {
+  1: "High Card",
+  2: "One Pair",
+  3: "Two Pair",
+  4: "Three of a Kind",
+  5: "Straight",
+  6: "Flush",
+  7: "Full House",
+  8: "Four of a Kind",
+  9: "Straight Flush",
+  10: "Royal Flush",
+};
 function ChatBox({
   messages,
   socket,
@@ -33,9 +46,35 @@ function ChatBox({
     setUserMessage("");
   };
 
-  const evaluator = PokerHandEvaluator;
+  socket.on("register_response", (data) => {
+    console.log("FERGUS REGISTER RESPONSE 222222222", data);
 
-  console.log("fergus teheeheheheehehe", tableDetails, playerDetails);
+    if (data.success) {
+    } else {
+    }
+    // Handle registration response if needed
+  });
+
+  const evaluator = new PokerHandEvaluator();
+
+  console.log(
+    "fergus teheeheheheehehe",
+    tableDetails,
+    playerDetails,
+    evaluator.getBestHand(
+      playerDetails?.playerCards || [],
+      tableDetails?.communityCards || []
+    )
+  );
+
+  const userHand =
+    rankingMap[
+      evaluator.getBestHand(
+        playerDetails?.playerCards || [],
+        tableDetails?.communityCards || []
+      )[0]
+    ];
+
   return (
     <>
       <Box
@@ -49,7 +88,7 @@ function ChatBox({
           opacity: 0.9,
         }}
       >
-        You have: Royal Flush
+        {userHand && <>Your Best Hand: {userHand}</>}
       </Box>
       <Box
         sx={{
@@ -82,44 +121,66 @@ function ChatBox({
             justifyContent: "flex-end",
           }}
         >
-          {messages?.map((msg, index) => (
-            <Box
-              key={index}
-              sx={{
-                color: "white",
-                fontSize: "0.7em",
-                width: "100%",
-                display: "grid",
-                gridTemplateColumns:
-                  "minmax(10px, auto) 1fr minmax(60px, auto)",
-                gap: 1,
-                alignItems: "center",
-                px: 1,
-                py: 0.5,
-                background:
-                  index % 2 === 0 ? "rgba(255, 255, 255, 0.03)" : "transparent",
-              }}
-            >
+          {messages?.map((msg, index) =>
+            !msg.gameMessage ? (
               <Box
+                key={index}
                 sx={{
-                  fontWeight: "bold",
-                  color: "#4fc3f7",
-                  textAlign: "left",
-                  width: "1em",
+                  color: "white",
+                  fontSize: "0.6em",
+                  width: "100%",
+                  display: "grid",
+                  gridTemplateColumns: "auto 1.4fr minmax(60px, auto)",
+                  gap: 1,
+                  alignItems: "center",
+                  px: 1,
+                  py: 0.5,
+                  background:
+                    index % 2 === 0
+                      ? "rgba(255, 255, 255, 0.03)"
+                      : "transparent",
                 }}
               >
-                {msg.playerId}
+                <Box
+                  sx={{
+                    fontWeight: "bold",
+                    color: "#4fc3f7",
+                    textAlign: "left",
+                    fontSize: "1em",
+                    width: "0.5em",
+                  }}
+                >
+                  {msg.playerId}
+                </Box>
+                <Box sx={{ background: "pifnk", textAlign: "left", ml: 4 }}>
+                  {msg.message}
+                </Box>
+                <Box
+                  sx={{ fontSize: "0.6em", color: "rgba(255, 255, 255, 0.6)" }}
+                >
+                  {msg.timestamp}
+                </Box>
               </Box>
-              <Box sx={{ background: "pifnk", textAlign: "left", ml: 4 }}>
+            ) : (
+              <Box
+                key={index}
+                sx={{
+                  color: "cyan",
+                  fontSize: "0.6em",
+                  width: "100%",
+                  textAlign: "left",
+                  px: 1,
+                  py: 0.5,
+                  background:
+                    index % 2 === 0
+                      ? "rgba(255, 255, 255, 0.03)"
+                      : "transparent",
+                }}
+              >
                 {msg.message}
               </Box>
-              <Box
-                sx={{ fontSize: "0.6em", color: "rgba(255, 255, 255, 0.6)" }}
-              >
-                {msg.timestamp}
-              </Box>
-            </Box>
-          ))}
+            )
+          )}
         </Box>
 
         <Box

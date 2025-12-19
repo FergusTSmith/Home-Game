@@ -13,10 +13,19 @@ import MenuItem from "./MenuItem";
 import Chip from "../Table/Chip";
 import NewGameMenu from "./NewGameMenu";
 import JoinGameModal from "./JoinGameModal";
+import RegistrationModal from "./RegistrationModal";
+import LoginModal from "./LoginModal";
+import SettingsModal from "./SettingsModal";
+import { useGameState } from "../../context/GameStateContext";
 
 function HomeScreen({ setInGame, setPlayerDetails, playerDetails }) {
   const [newGameModal, setNewGameModal] = useState(false);
   const [joinGameModal, setJoinGameModal] = useState(false);
+  const [registrationModal, setRegistrationModal] = useState(false);
+  const [loginModal, setLoginModal] = useState(false);
+
+  const { settingsModalOpen, setSettingsModalOpen } = useGameState();
+  console.log("FERGUS >>>>>>>>>>>>>>>>>>>>>", playerDetails)
 
   return (
     <Box
@@ -34,46 +43,58 @@ function HomeScreen({ setInGame, setPlayerDetails, playerDetails }) {
     >
       <Box
         sx={{
-          width: "50%",
           display: "flex",
-          height: "30vh",
-          // background: "pink",
-          position: "fixed",
-          left: "50%",
-          top: "50%",
-          transform: "translate(-50%, -50%)",
+          justifyContent: "center",
+          alignItems: "center",
           flexDirection: "row",
-          mt: 12,
-          gap: '3vw',
+          gap: "3vw",
           "@media (max-aspect-ratio: 1/1)": {
             flexDirection: "column",
-            width: "100%",
-            height: "30vh",
-            mt: -4,
           },
         }}
       >
-        <MenuItem
-          symbol={"♠"}
-          menuText={"New Game"}
-          setInGame={setInGame}
-          onClick={() => setNewGameModal(true)}
-        ></MenuItem>
-        <MenuItem
-          symbol={"♣"}
-          menuText={"Join Game"}
-          setInGame={setInGame}
-          onClick={() => setJoinGameModal(true)}
-        ></MenuItem>
-        <MenuItem
-          symbol={"♥"}
-          menuText={"Saved Games"}
-          setInGame={setInGame}
-        ></MenuItem>
+        {playerDetails.playerId && (
+          <>
+            <MenuItem
+              symbol={"♠"}
+              menuText={"New Game"}
+              setInGame={setInGame}
+              onClick={() => setNewGameModal(true)}
+            ></MenuItem>
+            <MenuItem
+              symbol={"♣"}
+              menuText={"Join Game"}
+              setInGame={setInGame}
+              onClick={() => setJoinGameModal(true)}
+            ></MenuItem>
+            <MenuItem
+              symbol={"♥"}
+              menuText={"Saved Games"}
+              setInGame={setInGame}
+            ></MenuItem>
+          </>
+        )}
+        {!playerDetails.playerId && (
+          <>
+            <MenuItem
+              symbol={"♠"}
+              menuText={"Register"}
+              setInGame={setInGame}
+              onClick={() => setRegistrationModal(true)}
+            ></MenuItem>
+            <MenuItem
+              symbol={"♣"}
+              menuText={"Login"}
+              setInGame={setInGame}
+              onClick={() => setLoginModal(true)}
+            ></MenuItem>
+          </>
+        )}
         <MenuItem
           symbol={"♦"}
           menuText={"Settings"}
           setInGame={setInGame}
+          onClick={() => setSettingsModalOpen(true)}
         ></MenuItem>
         <Dialog
           open={newGameModal}
@@ -93,6 +114,36 @@ function HomeScreen({ setInGame, setPlayerDetails, playerDetails }) {
           aria-describedby="modal-modal-description"
         >
           <JoinGameModal
+            setPlayerDetails={setPlayerDetails}
+            playerDetails={playerDetails}
+          />
+        </Dialog>{" "}
+        <Dialog
+          open={registrationModal && !playerDetails.playerId}
+          onClose={() => setRegistrationModal(false)}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <RegistrationModal />
+        </Dialog>{" "}
+        <Dialog
+          open={loginModal && !playerDetails.playerId}
+          onClose={() => setLoginModal(false)}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <LoginModal
+            setPlayerDetails={setPlayerDetails}
+            playerDetails={playerDetails}
+          />
+        </Dialog>{" "}
+        <Dialog
+          open={settingsModalOpen}
+          onClose={() => setSettingsModalOpen(false)}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <SettingsModal
             setPlayerDetails={setPlayerDetails}
             playerDetails={playerDetails}
           />

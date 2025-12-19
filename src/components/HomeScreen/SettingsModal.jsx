@@ -1,14 +1,15 @@
-import { Box, Button, Typography } from "@mui/material";
 import React, { useState } from "react";
+import { Box, Button, Typography } from "@mui/material";
 import CustomisedTextField from "./NewGameForm/CustomisedTextField";
 import { useSocket } from "../../context/SocketContext";
+import { io } from "socket.io-client";
 
-function JoinGameModal({setPlayerDetails, playerDetails}) {
-  const { socket } = useSocket();
+function SettingsModal({ setPlayerDetails, playerDetails }) {
+  const { socket, reconnectSocket } = useSocket();
   const [formData, setFormData] = useState({
-    playerId: playerDetails.playerId,
-    gameId: "",
+    username: playerDetails.playerId,
   });
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -17,12 +18,26 @@ function JoinGameModal({setPlayerDetails, playerDetails}) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setPlayerDetails({ ...playerDetails, playerId: formData.playerId });
-    if (socket) {
-      socket.emit("join_game", formData);
-    }
+    // setPlayerDetails({ ...playerDetails, playerId: formData.playerId });
+    console.log("FERGUS logout SUBMIT", formData);
+
+    // if (socket) {
+    //   socket.emit("logout", { username: playerDetails.playerId });
+    // }
+    await fetch("http://127.0.0.1:5000/logout", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: formData.username,
+      }),
+    }).then((response) => {
+      if (response.status === 200) {
+        setPlayerDetails({ playerId: null, playerCards: [] });
+      }
+    });
   };
   return (
     <Box
@@ -33,12 +48,10 @@ function JoinGameModal({setPlayerDetails, playerDetails}) {
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
-
         backdropFilter: "blur(12px)",
         borderTop: "1px solid rgba(255, 255, 255, 0.08)",
         borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
-        padding: 3,
-        borderRadius: 3,
+        borderRadius: 13,
         opacity: 0.9,
         boxShadow: 24,
         p: 4,
@@ -47,27 +60,18 @@ function JoinGameModal({setPlayerDetails, playerDetails}) {
         gap: 2,
         overflow: "scroll",
         alignItems: "center", // <-- Center horizontally
-        justifyContent: "center", // <-- Center vertically
+        justifyContent: "space-between", // <-- Center vertically
         textAlign: "center", // <-- Center text
-        justifyContent: "space-between",
       }}
     >
       <Typography sx={{ color: "white", fontSize: 30, fontFamily: "Orbiton" }}>
-        Join Game
+        Settings
       </Typography>
-      <Box>
-        <CustomisedTextField
-          label="Game ID"
-          name="gameId"
-          value={formData.gameId}
-          onChange={handleChange}
-        />
-        <Button variant="contained" type="submit">
-          Join Game
-        </Button>
-      </Box>
+      <Button variant="contained" type="submit">
+        Logout
+      </Button>
     </Box>
   );
 }
 
-export default JoinGameModal;
+export default SettingsModal;

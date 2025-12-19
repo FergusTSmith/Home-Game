@@ -9,7 +9,7 @@ function LobbyModal({ gameDetails, joinTable }) {
     <Box
       sx={{
         position: "fixed",
-        width: "60vw",
+        width: "65vw",
         height: "60vh",
         top: "50%",
         left: "50%",
